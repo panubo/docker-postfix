@@ -2,6 +2,13 @@
 
 set -e
 
+[ "$DEBUG" == 'true' ] && set -x
+
+# Copy default spool from cache
+if [ ! "$(ls -A /var/spool/postfix)" ]; then
+   cp -a /var/spool/postfix.cache/* /var/spool/postfix/
+fi
+
 if [ -z "$MAILNAME" ]; then
     echo "Error: MAILNAME not specified"
     exit 128
