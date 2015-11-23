@@ -23,6 +23,8 @@ RUN apt-get update && \
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     postconf -e mail_spool_directory="/var/spool/mail/" && \
     postconf -e mailbox_command="" && \
+    # Enable submission 
+    postconf -Me submission/inet="submission inet n - - - - smtpd" && \
     # Configure Rsyslog: Disable mail logs
     sed -i -e 's@^mail.*@@g' /etc/rsyslog.conf && \
     # Cache spool dir as template
