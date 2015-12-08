@@ -10,3 +10,7 @@ Mail logs are streamed to stdout and not stored on disk.
 
 - `MAILNAME` - set this to a legitimate hostname for this service (required).
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay.
+
+## Volumes
+
+No volumes are defined. If you want persistent spool storage then mount `/var/spool/postfix` outside of the container.
