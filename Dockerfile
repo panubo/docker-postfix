@@ -15,9 +15,12 @@ RUN echo mail > /etc/hostname; \
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils rsyslog supervisor && \
+    apt-get install -y --no-install-recommends postfix mailutils rsyslog curl ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install s6
+RUN curl -L https://github.com/just-containers/skaware/releases/download/v1.17.0/s6-2.2.4.0-linux-amd64-bin.tar.gz | tar -C / -zxf -
 
 # Configure
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
@@ -30,9 +33,7 @@ RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     # Cache spool dir as template
     cp -a /var/spool/postfix /var/spool/postfix.cache
 
-ADD rsyslogd.conf /etc/rsyslog.d/
-ADD supervisord.conf /etc/supervisor/supervisord.conf
-ADD *.sh /
+COPY rsyslogd.conf /etc/rsyslog.d/
+COPY s6 /etc/s6/
 
-ENTRYPOINT ["/entry.sh"]
-CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["/bin/s6-svscan","/etc/s6"]

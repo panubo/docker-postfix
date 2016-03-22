@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Wait for postfix to create FIFO
+while [ ! -e "/dev/maillog" ]; do
+	true
+done
+
+exec cat /dev/maillog

@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-
-[ "$DEBUG" == 'true' ] && set -x
-
-# Allow bypass initialisation
-if [ "$1" != "supervisord" ]; then
-   exec "$@"
-fi
+cd /etc/postfix
 
 # Copy default spool from cache
 if [ ! "$(ls -A /var/spool/postfix)" ]; then
@@ -34,5 +27,13 @@ postconf -e mynetworks="$MYNETWORKS"
 # Create logging FIFO
 mkfifo /dev/maillog
 
-echo "Exec'ing $@"
-exec "$@"
+# exit cleanly
+trap "{ /usr/sbin/service postfix stop; }" EXIT
+
+# start postfix
+/usr/sbin/service postfix start
+
+# watch for postfix exit
+while kill -0 $(pidof master) 2>/dev/null; do 
+	true
+done 
