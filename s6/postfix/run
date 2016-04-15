@@ -35,6 +35,8 @@ trap "{ /usr/sbin/service postfix stop; }" EXIT
 # start postfix
 /usr/sbin/service postfix start
 
+sleep 10 # wait for startup
+
 # watch for postfix exit
 while kill -0 $(pidof master) 2>/dev/null; do 
 	sleep 1
