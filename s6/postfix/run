@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[ "$DEBUG" == 'true' ] && set -x
+
 cd /etc/postfix
 
 # Copy default spool from cache

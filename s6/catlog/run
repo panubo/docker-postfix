@@ -1,8 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+[ "$DEBUG" == 'true' ] && set -x
 
 # Wait for postfix to create FIFO
 while [ ! -e "/dev/maillog" ]; do
-	true
+    sleep 1
 done
 
 exec cat /dev/maillog
