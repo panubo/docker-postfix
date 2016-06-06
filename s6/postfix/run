@@ -33,7 +33,7 @@ mkfifo /dev/maillog
 trap "{ /usr/sbin/service postfix stop; }" EXIT
 
 # Cleanup stale pids incase we don't exit cleanly
-rm -f /var/spool/postfix/pid/.
+rm -f /var/spool/postfix/pid/*
 
 # start postfix
 /usr/sbin/service postfix start
