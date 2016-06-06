@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Shutdown everything and exit the process crashes or is stopped.
-s6-svscanctl -t /etc/s6

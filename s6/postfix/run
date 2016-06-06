@@ -26,9 +26,6 @@ postconf -e myhostname="$MAILNAME"
 postconf -e mydestination="$MAILNAME"
 postconf -e mynetworks="$MYNETWORKS"
 
-# Create logging FIFO
-mkfifo /dev/maillog
-
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT
 

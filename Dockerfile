@@ -15,7 +15,7 @@ RUN echo mail > /etc/hostname; \
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils rsyslog curl ca-certificates && \
+    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd curl ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -28,12 +28,9 @@ RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     postconf -e mailbox_command="" && \
     # Enable submission 
     postconf -Me submission/inet="submission inet n - - - - smtpd" && \
-    # Configure Rsyslog: Disable mail logs
-    sed -i -e 's@^mail.*@@g' /etc/rsyslog.conf && \
     # Cache spool dir as template
     cp -a /var/spool/postfix /var/spool/postfix.cache
 
-COPY rsyslogd.conf /etc/rsyslog.d/
 COPY s6 /etc/s6/
 
 CMD ["/bin/s6-svscan","/etc/s6"]

@@ -2,4 +2,4 @@
 
 [ "$DEBUG" == 'true' ] && set -x
 
-exec /usr/sbin/rsyslogd -n
+exec syslogd -n -O /dev/stdout -S
