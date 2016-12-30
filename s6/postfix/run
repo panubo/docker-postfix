@@ -24,6 +24,7 @@ echo "Setting mailname to $MAILNAME"
 echo $MAILNAME > /etc/mailname 
 postconf -e myhostname="$MAILNAME"
 postconf -e mydestination="$MAILNAME"
+echo "Setting mynetworks to $MYNETWORKS"
 postconf -e mynetworks="$MYNETWORKS"
 
 # exit cleanly
