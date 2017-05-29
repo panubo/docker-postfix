@@ -1,6 +1,6 @@
 # Postfix Docker Container
 
-Simple Postfix SMTP Relay. 
+Simple Postfix SMTP Relay.
 
 Mail logs are streamed to stdout and not stored on disk.
 
@@ -8,6 +8,7 @@ Mail logs are streamed to stdout and not stored on disk.
 
 - `MAILNAME` - set this to a legitimate hostname for this service (required).
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay.
+- `SIZELIMIT` -  Postfix `message_size_limit`.
 
 ## Volumes
 
@@ -23,3 +24,7 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 # With TLS
 echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test email\n\nThis is a test email message" | mailx -v -S smtp-use-starttls -S ssl-verify=ignore -S smtp=smtp://... -S from=bill@example.com -t
 ```
+
+## Developing
+
+See the `Makefile` for make targets. eg To build run `make build`.

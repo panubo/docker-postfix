@@ -9,6 +9,7 @@ if [ ! "$(ls -A /var/spool/postfix)" ]; then
    cp -a /var/spool/postfix.cache/* /var/spool/postfix/
 fi
 
+# Defaults
 if [ -z "$MAILNAME" ]; then
     echo "Error: MAILNAME not specified"
     exit 128
@@ -19,13 +20,21 @@ if [ -z "$MYNETWORKS" ]; then
     echo "Warning: MYNETWORKS not specified, allowing all private IPs"
 fi
 
+if [ -z "$SIZELIMIT" ]; then
+    SIZELIMIT=15728640  # 10Meg with headroom
+fi
+
 # Configure Postfix
 echo "Setting mailname to $MAILNAME"
-echo $MAILNAME > /etc/mailname 
+echo $MAILNAME > /etc/mailname
 postconf -e myhostname="$MAILNAME"
 postconf -e mydestination="$MAILNAME"
+
 echo "Setting mynetworks to $MYNETWORKS"
 postconf -e mynetworks="$MYNETWORKS"
+
+echo "Setting message_size_limit to $SIZELIMIT"
+postconf -e message_size_limit="$SIZELIMIT"
 
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT
@@ -39,6 +48,6 @@ rm -f /var/spool/postfix/pid/*
 sleep 10 # wait for startup
 
 # watch for postfix exit
-while kill -0 $(pidof master) 2>/dev/null; do 
+while kill -0 $(pidof master) 2>/dev/null; do
 	sleep 1
-done 
+done
