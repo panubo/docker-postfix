@@ -1,24 +1,25 @@
 # Postfix Docker Container
 
-Simple Postfix SMTP Relay.
+Postfix SMTP Relay.
 
-Mail logs are streamed to stdout. They can optionally stored on disk (set `LOGOUTPUT` variable).
+Fairly simple drop-in container for SMTP relaying. Use wherever a connected service
+requires SMTP sending capabilities.
 
 ## Environment Variables
 
-- `MAILNAME` - set this to a legitimate hostname for this service (required).
-- `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay.
-- `SIZELIMIT` -  Postfix `message_size_limit`.
-- `LOGOUTPUT` - Postfix log file location. eg `/var/log/maillog`. Defaults to `/dev/stdout`.
+- `MAILNAME` - set this to a legitimate FQDN hostname for this service (required).
+- `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay. Default `127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`
+- `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
+- `LOGOUTPUT` - Postfix log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
 
 TLS parameters:
 
-- `USETLS` - default `yes`
-- `TLSKEY` - default `/etc/ssl/private/ssl-cert-snakeoil.key`
-- `TLSCRT` - default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
-- `TLSCA` - default ''
+- `USETLS` - Enable opportunistic TLS. default `yes`
+- `TLSKEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
+- `TLSCRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
+- `TLSCA` - Default ''
 
-The snakeoil certificate will generated on start if required.
+NB. The snake-oil certificate will generated on start if required.
 
 ## Volumes
 
@@ -38,3 +39,7 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 ## Developing
 
 See the `Makefile` for make targets. eg To build run `make build`.
+
+## Status
+
+Production ready and stable.
