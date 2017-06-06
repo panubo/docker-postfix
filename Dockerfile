@@ -7,8 +7,6 @@ ENV S6_RELEASE=1.19.1 S6_VERSION=2.4.0.0 S6_SHA1=c3caccc531029c4993b3b66027559b1
 
 EXPOSE 25 587
 
-VOLUME ["/var/spool/mail/"]
-
 # Preselections for installation
 RUN echo mail > /etc/hostname; \
     echo "postfix postfix/main_mailer_type string Internet site" >> preseed.txt; \
@@ -30,7 +28,6 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
 
 # Configure
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
-    postconf -e mail_spool_directory="/var/spool/mail/" && \
     # Enable submission
     postconf -Me submission/inet="submission inet n - - - - smtpd" && \
     # Cache spool dir as template
