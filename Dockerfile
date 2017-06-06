@@ -15,7 +15,7 @@ RUN echo mail > /etc/hostname; \
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd curl ca-certificates && \
+    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd curl ca-certificates locales && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +26,11 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
     tar -xzf s6.tar.gz -C / && \
     rm -rf ${DIR}
 
-# Configure
+# Configure Locales (fix error w/ dpkg-reconfigure)
+COPY locale.gen /etc/locale.gen
+RUN locale-gen
+
+# Configure Postfix
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     # Enable submission
     postconf -Me submission/inet="submission inet n - - - - smtpd" && \
