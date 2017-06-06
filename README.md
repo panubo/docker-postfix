@@ -11,6 +11,15 @@ Mail logs are streamed to stdout. They can optionally stored on disk (set `LOGOU
 - `SIZELIMIT` -  Postfix `message_size_limit`.
 - `LOGOUTPUT` - Postfix log file location. eg `/var/log/maillog`. Defaults to `/dev/stdout`.
 
+TLS parameters:
+
+- `USETLS` - default `yes`
+- `TLSKEY` - default `/etc/ssl/private/ssl-cert-snakeoil.key`
+- `TLSCRT` - default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
+- `TLSCA` - default ''
+
+The snakeoil certificate will generated on start if required.
+
 ## Volumes
 
 No volumes are defined. If you want persistent spool storage then mount `/var/spool/postfix` outside of the container.

@@ -24,7 +24,27 @@ if [ -z "$SIZELIMIT" ]; then
     SIZELIMIT=15728640  # 10Meg with headroom
 fi
 
-# Configure Postfix
+# TLS
+: ${USETLS:='yes'}
+: ${TLSKEY:='/etc/ssl/private/ssl-cert-snakeoil.key'}
+: ${TLSCRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
+: ${TLSCA:=''}
+
+echo "Setting smtpd_use_tls to $USETLS"
+postconf -e smtpd_use_tls="$USETLS"
+
+if [ "${USETLS}" == "yes" ]; then
+    if [ "${TLSKEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
+        echo "Generating snakeoil SSL cert"
+        dpkg-reconfigure -f noninteractive ssl-cert
+    fi
+    echo "Setting smtpd_tls parameters"
+    postconf -e smtpd_tls_key_file="$TLSKEY"
+    postconf -e smtpd_tls_cert_file="$TLSCRT"
+    postconf -e smtpd_tls_CAfile="$TLSCA"
+fi
+
+# Configure Postfix General parameters
 echo "Setting mailname to $MAILNAME"
 echo $MAILNAME > /etc/mailname
 postconf -e myhostname="$MAILNAME"

@@ -31,11 +31,12 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
 # Configure
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     postconf -e mail_spool_directory="/var/spool/mail/" && \
-    postconf -e mailbox_command="" && \
     # Enable submission
     postconf -Me submission/inet="submission inet n - - - - smtpd" && \
     # Cache spool dir as template
-    cp -a /var/spool/postfix /var/spool/postfix.cache
+    cp -a /var/spool/postfix /var/spool/postfix.cache && \
+    # Remove snakeoil certs
+    rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
 
 COPY s6 /etc/s6/
 
