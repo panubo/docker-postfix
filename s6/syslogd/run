@@ -2,4 +2,9 @@
 
 [ "$DEBUG" == 'true' ] && set -x
 
-exec syslogd -n -O /dev/stdout -S
+# Defaults
+: ${LOGOUTPUT:='/dev/stdout'}
+
+echo "Setting syslogd output to ${LOGOUTPUT}"
+
+exec syslogd -n -O ${LOGOUTPUT} -S
