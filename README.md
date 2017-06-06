@@ -2,13 +2,14 @@
 
 Simple Postfix SMTP Relay.
 
-Mail logs are streamed to stdout and not stored on disk.
+Mail logs are streamed to stdout. They can optionally stored on disk (set `LOGOUTPUT` variable).
 
 ## Environment Variables
 
 - `MAILNAME` - set this to a legitimate hostname for this service (required).
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay.
 - `SIZELIMIT` -  Postfix `message_size_limit`.
+- `LOGOUTPUT` - Postfix log file location. eg `/var/log/maillog`. Defaults to `/dev/stdout`.
 
 ## Volumes
 
