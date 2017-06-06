@@ -2,6 +2,9 @@
 
 [ "$DEBUG" == 'true' ] && set -x
 
+# Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
+unset LANG
+
 cd /etc/postfix
 
 # Copy default spool from cache
