@@ -3,7 +3,7 @@
 Postfix SMTP Relay.
 
 Fairly simple drop-in container for SMTP relaying. Use wherever a connected service
-requires SMTP sending capabilities.
+requires SMTP sending capabilities. Supports TLS out of the box and DKIM (if enabled and configured).
 
 ## Environment Variables
 
@@ -14,16 +14,24 @@ requires SMTP sending capabilities.
 
 TLS parameters:
 
-- `USETLS` - Enable opportunistic TLS. default `yes`
-- `TLSKEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
-- `TLSCRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
-- `TLSCA` - Default ''
+- `USE_TLS` - Enable opportunistic TLS. Default `yes`
+- `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
+- `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
+- `TLS_CA` - Default ''
 
-NB. The snake-oil certificate will generated on start if required.
+NB. A "snake-oil" certificate will generated on start if required.
+
+DKIM parameters:
+
+- `USE_DKIM` - Enable DKIM. Default `no`
+- `DKIM_KEYFILE` - DKIM Keyfile location. Default `/etc/opendkim/dkim.key`
+- `DKIM_DOMAINS` - Domains to sign. Default to MAILNAME. Multiple domains will use the same key and selector.
+- `DKIM_SELECTOR` - DKIM key selector. Default `mail`. `<selector>._domainkey.<domain>` is used for resolving the public key in DNS.
 
 ## Volumes
 
-No volumes are defined. If you want persistent spool storage then mount `/var/spool/postfix` outside of the container.
+No volumes are defined. If you want persistent spool storage then mount
+`/var/spool/postfix` outside of the container.
 
 ## Test email
 

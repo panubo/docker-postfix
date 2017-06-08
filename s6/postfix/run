@@ -14,49 +14,59 @@ fi
 
 # Defaults
 if [ -z "$MAILNAME" ]; then
-    echo "Error: MAILNAME not specified"
+    echo "postfix >> Error: MAILNAME not specified"
     exit 128
 fi
 
 if [ -z "$MYNETWORKS" ]; then
     MYNETWORKS='127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'
-    echo "Warning: MYNETWORKS not specified, allowing all private IPs"
+    echo "postfix >> Warning: MYNETWORKS not specified, allowing all private IPs"
 fi
 
 if [ -z "$SIZELIMIT" ]; then
     SIZELIMIT=15728640  # 10Meg with headroom
 fi
 
+# DKIM
+if [ "${USE_DKIM}" == "yes" ]; then
+    # TODO s6-svwait for dkim
+    echo "postfix >> Enabling dkim milter"
+    postconf -e milter_protocol="6"
+    postconf -e milter_default_action="accept"
+    postconf -e smtpd_milters="inet:localhost:8891"
+    postconf -e non_smtpd_milters="inet:localhost:8891"
+fi
+
 # TLS
-: ${USETLS:='yes'}
-: ${TLSKEY:='/etc/ssl/private/ssl-cert-snakeoil.key'}
-: ${TLSCRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
-: ${TLSCA:=''}
+: ${USE_TLS:='yes'}
+: ${TLS_KEY:='/etc/ssl/private/ssl-cert-snakeoil.key'}
+: ${TLS_CRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
+: ${TLS_CA:=''}
 
-echo "Setting smtpd_use_tls to $USETLS"
-postconf -e smtpd_use_tls="$USETLS"
+echo "postfix >> Setting smtpd_use_tls to $USE_TLS"
+postconf -e smtpd_use_tls="$USE_TLS"
 
-if [ "${USETLS}" == "yes" ]; then
-    if [ "${TLSKEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
-        echo "Generating snakeoil SSL cert"
+if [ "${USE_TLS}" == "yes" ]; then
+    if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
+        echo "postfix >> Generating snakeoil SSL cert"
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
-    echo "Setting smtpd_tls parameters"
-    postconf -e smtpd_tls_key_file="$TLSKEY"
-    postconf -e smtpd_tls_cert_file="$TLSCRT"
-    postconf -e smtpd_tls_CAfile="$TLSCA"
+    echo "postfix >> Setting smtpd_tls parameters"
+    postconf -e smtpd_tls_key_file="$TLS_KEY"
+    postconf -e smtpd_tls_cert_file="$TLS_CRT"
+    postconf -e smtpd_tls_CAfile="$TLS_CA"
 fi
 
 # Configure Postfix General parameters
-echo "Setting mailname to $MAILNAME"
+echo "postfix >> Setting mailname to $MAILNAME"
 echo $MAILNAME > /etc/mailname
 postconf -e myhostname="$MAILNAME"
 postconf -e mydestination="$MAILNAME"
 
-echo "Setting mynetworks to $MYNETWORKS"
+echo "postfix >> Setting mynetworks to $MYNETWORKS"
 postconf -e mynetworks="$MYNETWORKS"
 
-echo "Setting message_size_limit to $SIZELIMIT"
+echo "postfix >> Setting message_size_limit to $SIZELIMIT"
 postconf -e message_size_limit="$SIZELIMIT"
 
 # exit cleanly
