@@ -25,7 +25,7 @@ fi
 # exit cleanly
 trap "{ /usr/sbin/service opendkim stop; }" EXIT
 
-# start postfix
+# start opendkim
 /usr/sbin/service opendkim start
 
 sleep 10 # wait for startup
