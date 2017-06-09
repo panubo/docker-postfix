@@ -20,7 +20,7 @@ if [ ! -f "${DKIM_KEYFILE}" ]; then
     exit 128
 else
     echo "dkim >> Setting mode and owner on $DKIM_KEYFILE"
-    chown opendkim:opendkim ${DKIM_KEYFILE}
+    chown root:root ${DKIM_KEYFILE}
     chmod 400 ${DKIM_KEYFILE}
 fi
 
