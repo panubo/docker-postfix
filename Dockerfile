@@ -15,7 +15,7 @@ RUN echo mail > /etc/hostname; \
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim curl ca-certificates && \
+    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools curl ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
