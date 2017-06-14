@@ -30,6 +30,10 @@ DKIM parameters:
 - `DKIM_INTERNALHOSTS` - Defaults to `MYNETWORKS`.
 - `DKIM_EXTERNALIGNORE` - Defaults to `MYNETWORKS`.
 
+General Postfix:
+
+- `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
+
 ## Volumes
 
 No volumes are defined. If you want persistent spool storage then mount

@@ -43,6 +43,9 @@ fi
 : ${TLS_CRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
 : ${TLS_CA:=''}
 
+# General
+: ${POSTFIX_ADD_MISSING_HEADERS:='no'}
+
 echo "postfix >> Setting smtpd_use_tls to $USE_TLS"
 postconf -e smtpd_use_tls="$USE_TLS"
 
@@ -70,6 +73,9 @@ postconf -e mynetworks="$MYNETWORKS"
 
 echo "postfix >> Setting message_size_limit to $SIZELIMIT"
 postconf -e message_size_limit="$SIZELIMIT"
+
+echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
+postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
 
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT
