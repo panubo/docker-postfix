@@ -56,6 +56,7 @@ if [ "${USE_TLS}" == "yes" ]; then
     fi
     echo "postfix >> Setting smtpd_tls parameters"
     postconf -e smtp_tls_security_level="may"
+    postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
     postconf -e smtpd_tls_key_file="$TLS_KEY"
     postconf -e smtpd_tls_cert_file="$TLS_CRT"
