@@ -11,6 +11,8 @@ OUTPUT='/etc/opendkim.conf'
 : ${DKIM_KEYFILE:='/etc/opendkim/dkim.key'}
 : ${DKIM_DOMAINS:="${MAILNAME}"}
 : ${DKIM_SELECTOR:='mail'}
+: ${DKIM_INTERNALHOSTS:="${MYNETWORKS}"}
+: ${DKIM_EXTERNALIGNORE:="${MYNETWORKS}"}
 
 # Checks
 if [ ! -f "${DKIM_KEYFILE}" ]; then
@@ -57,6 +59,9 @@ Canonicalization	relaxed
 Mode			s
 #SubDomains		no
 #ADSPAction            continue
+
+InternalHosts ${DKIM_INTERNALHOSTS}
+ExternalIgnoreList ${DKIM_EXTERNALIGNORE}
 
 ##  Specifies whether or not the filter should generate report mail back
 ##  to senders when verification fails and an address for such a purpose

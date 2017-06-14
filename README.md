@@ -27,6 +27,8 @@ DKIM parameters:
 - `DKIM_KEYFILE` - DKIM Keyfile location. Default `/etc/opendkim/dkim.key`
 - `DKIM_DOMAINS` - Domains to sign. Default to MAILNAME. Multiple domains will use the same key and selector.
 - `DKIM_SELECTOR` - DKIM key selector. Default `mail`. `<selector>._domainkey.<domain>` is used for resolving the public key in DNS.
+- `DKIM_INTERNALHOSTS` - Defaults to `MYNETWORKS`.
+- `DKIM_EXTERNALIGNORE` - Defaults to `MYNETWORKS`.
 
 ## Volumes
 
