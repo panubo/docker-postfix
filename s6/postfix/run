@@ -45,6 +45,7 @@ fi
 
 # General
 : ${POSTFIX_ADD_MISSING_HEADERS:='no'}
+: ${INET_PROTOCOLS:='all'}
 
 echo "postfix >> Setting smtpd_use_tls to $USE_TLS"
 postconf -e smtpd_use_tls="$USE_TLS"
@@ -77,6 +78,9 @@ postconf -e message_size_limit="$SIZELIMIT"
 
 echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
 postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
+
+echo "postfix >> Setting inet_protocols to $INET_PROTOCOLS"
+postconf -e inet_protocols="$INET_PROTOCOLS"
 
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT

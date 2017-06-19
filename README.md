@@ -33,6 +33,7 @@ DKIM parameters:
 General Postfix:
 
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
+- `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 
 ## Volumes
 
