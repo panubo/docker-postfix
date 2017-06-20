@@ -5,6 +5,6 @@
 # Defaults
 : ${LOGOUTPUT:='/dev/stdout'}
 
-echo "Setting syslogd output to ${LOGOUTPUT}"
+echo "syslogd >> Setting syslogd output to ${LOGOUTPUT}"
 
 exec syslogd -n -O ${LOGOUTPUT} -S

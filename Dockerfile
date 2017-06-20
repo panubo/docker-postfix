@@ -1,6 +1,6 @@
 # Postfix SMTP Relay
 
-FROM debian:latest
+FROM debian:jessie
 MAINTAINER Andrew Cutler <andrew@panubo.io>
 
 ENV S6_RELEASE=1.19.1 S6_VERSION=2.4.0.0 S6_SHA1=c3caccc531029c4993b3b66027559b15d5a10874
@@ -15,7 +15,7 @@ RUN echo mail > /etc/hostname; \
 
 # Install packages
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd curl ca-certificates && \
+    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools curl ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -26,14 +26,18 @@ RUN DIR=$(mktemp -d) && cd ${DIR} && \
     tar -xzf s6.tar.gz -C / && \
     rm -rf ${DIR}
 
-# Configure Postfix
+# Configure Postfix / dkim
 RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     # Enable submission
     postconf -Me submission/inet="submission inet n - - - - smtpd" && \
     # Cache spool dir as template
     cp -a /var/spool/postfix /var/spool/postfix.cache && \
     # Remove snakeoil certs
-    rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
+    rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem && \
+    rm -f /etc/opendkim.conf && \
+    mkdir /etc/opendkim/
+
+COPY opendkim.conf.sh /etc/
 
 COPY s6 /etc/s6/
 
