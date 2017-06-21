@@ -13,19 +13,7 @@ if [ ! "$(ls -A /var/spool/postfix)" ]; then
 fi
 
 # Defaults
-if [ -z "$MAILNAME" ]; then
-    echo "postfix >> Error: MAILNAME not specified"
-    exit 128
-fi
-
-if [ -z "$MYNETWORKS" ]; then
-    MYNETWORKS='127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'
-    echo "postfix >> Warning: MYNETWORKS not specified, allowing all private IPs"
-fi
-
-if [ -z "$SIZELIMIT" ]; then
-    SIZELIMIT=15728640  # 10Meg with headroom
-fi
+: ${SIZELIMIT:='15728640'}  # 10Meg with headroom
 
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
@@ -85,7 +73,7 @@ postconf -e inet_protocols="$INET_PROTOCOLS"
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT
 
-# Cleanup stale pids incase we don't exit cleanly
+# Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
 
 # start postfix
@@ -94,6 +82,7 @@ rm -f /var/spool/postfix/pid/*
 sleep 10 # wait for startup
 
 # watch for postfix exit
-while kill -0 $(pidof master) 2>/dev/null; do
+MASTER_PID="$(cat /var/spool/postfix/pid/master.pid)"
+while kill -0 ${MASTER_PID} 2>/dev/null; do
 	sleep 1
 done

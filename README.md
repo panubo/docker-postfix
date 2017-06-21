@@ -2,15 +2,21 @@
 
 Postfix SMTP Relay.
 
-Fairly simple drop-in container for SMTP relaying. Use wherever a connected service
-requires SMTP sending capabilities. Supports TLS out of the box and DKIM (if enabled and configured).
+Drop-in container for SMTP relaying. Use wherever a connected service
+requires SMTP sending capabilities. Supports TLS out of the box and DKIM
+(if enabled and configured).
 
 ## Environment Variables
 
 - `MAILNAME` - set this to a legitimate FQDN hostname for this service (required).
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay. Default `127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`
+- `LOGOUTPUT` - Syslog log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
+
+General Postfix:
+
 - `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
-- `LOGOUTPUT` - Postfix log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
+- `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
+- `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 
 TLS parameters:
 
@@ -25,15 +31,10 @@ DKIM parameters:
 
 - `USE_DKIM` - Enable DKIM. Default `no`
 - `DKIM_KEYFILE` - DKIM Keyfile location. Default `/etc/opendkim/dkim.key`
-- `DKIM_DOMAINS` - Domains to sign. Default to MAILNAME. Multiple domains will use the same key and selector.
+- `DKIM_DOMAINS` - Domains to sign. Defaults to `MAILNAME`. Multiple domains will use the same key and selector.
 - `DKIM_SELECTOR` - DKIM key selector. Default `mail`. `<selector>._domainkey.<domain>` is used for resolving the public key in DNS.
 - `DKIM_INTERNALHOSTS` - Defaults to `MYNETWORKS`.
 - `DKIM_EXTERNALIGNORE` - Defaults to `MYNETWORKS`.
-
-General Postfix:
-
-- `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
-- `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 
 ## Volumes
 

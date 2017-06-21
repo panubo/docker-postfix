@@ -31,6 +31,7 @@ trap "{ /usr/sbin/service opendkim stop; }" EXIT
 sleep 10 # wait for startup
 
 # watch for opendkim exit
-while kill -0 $(pidof opendkim) 2>/dev/null; do
+OPENDKIM_PID="$(pidof opendkim)"
+while kill -0 ${OPENDKIM_PID} 2>/dev/null; do
 	sleep 1
 done

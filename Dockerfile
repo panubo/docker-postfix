@@ -40,5 +40,7 @@ RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
 COPY opendkim.conf.sh /etc/
 
 COPY s6 /etc/s6/
+COPY entry.sh /
 
-CMD ["/bin/s6-svscan","/etc/s6"]
+ENTRYPOINT ["/entry.sh"]
+CMD ["/bin/s6-svscan", "/etc/s6"]
