@@ -14,6 +14,7 @@ fi
 
 # Defaults
 : ${SIZELIMIT:='15728640'}  # 10Meg with headroom
+: ${RELAYHOST:=""} # empty
 
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
@@ -63,6 +64,9 @@ postconf -e mynetworks="$MYNETWORKS"
 
 echo "postfix >> Setting message_size_limit to $SIZELIMIT"
 postconf -e message_size_limit="$SIZELIMIT"
+
+echo "postfix >> Setting relayhost to ${RELAYHOST}"
+postconf -e relayhost="${RELAYHOST}"
 
 echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
 postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
