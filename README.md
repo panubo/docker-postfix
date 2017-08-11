@@ -18,7 +18,7 @@ General Postfix:
 - `RELAYHOST` -  Postfix `relayhost`. Default `empty`.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
-- `BOUNCE_ADDRESS` - An email address to forward delivery failure messages onto. Default is to log the delivery failure.
+- `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 
 TLS parameters:
 
