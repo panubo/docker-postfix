@@ -38,6 +38,10 @@ DKIM parameters:
 - `DKIM_INTERNALHOSTS` - Defaults to `MYNETWORKS`.
 - `DKIM_EXTERNALIGNORE` - Defaults to `MYNETWORKS`.
 
+## Usage Example
+
+`docker run -e MAILNAME=mail.example.com panubo/postfix`
+
 ## Volumes
 
 No volumes are defined. If you want persistent spool storage then mount
