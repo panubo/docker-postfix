@@ -23,7 +23,7 @@ RUN apt-get update && \
 RUN DIR=$(mktemp -d) && cd ${DIR} && \
     curl -s -L https://github.com/just-containers/skaware/releases/download/v${S6_RELEASE}/s6-${S6_VERSION}-linux-amd64-bin.tar.gz -o s6.tar.gz && \
     echo "${S6_SHA1} s6.tar.gz" | sha1sum -c - && \
-    tar -xzf s6.tar.gz -C / && \
+    tar -xzf s6.tar.gz -C /usr/local/ && \
     rm -rf ${DIR}
 
 # Configure Postfix / dkim
@@ -43,4 +43,4 @@ COPY s6 /etc/s6/
 COPY entry.sh /
 
 ENTRYPOINT ["/entry.sh"]
-CMD ["/bin/s6-svscan", "/etc/s6"]
+CMD ["/usr/local/bin/s6-svscan", "/etc/s6"]
