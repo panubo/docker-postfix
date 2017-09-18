@@ -13,6 +13,10 @@ OUTPUT='/etc/opendkim.conf'
 : ${DKIM_SELECTOR:='mail'}
 : ${DKIM_INTERNALHOSTS:="${MYNETWORKS}"}
 : ${DKIM_EXTERNALIGNORE:="${MYNETWORKS}"}
+: ${DKIM_OVERSIGN_HEADERS:='From'}
+: ${DKIM_SENDER_HEADERS:='From'}
+: ${DKIM_SIGN_HEADERS:='*'}
+: ${DKIM_OMIT_HEADERS:='*'}
 
 # Checks
 if [ ! -f "${DKIM_KEYFILE}" ]; then
@@ -73,7 +77,10 @@ SendReports	yes
 # and the verifier.  From is oversigned by default in the Debian pacakge
 # because it is often the identity key used by reputation systems and thus
 # somewhat security sensitive.
-OversignHeaders		From
+OversignHeaders  ${DKIM_OVERSIGN_HEADERS}
+SenderHeaders    ${DKIM_SENDER_HEADERS}
+SignHeaders      ${DKIM_SIGN_HEADERS}
+OmitHeaders      ${DKIM_OMIT_HEADERS}
 
 # List domains to use for RFC 6541 DKIM Authorized Third-Party Signatures
 # (ATPS) (experimental)
