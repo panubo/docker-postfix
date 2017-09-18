@@ -74,6 +74,11 @@ postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
 echo "postfix >> Setting inet_protocols to $INET_PROTOCOLS"
 postconf -e inet_protocols="$INET_PROTOCOLS"
 
+if [[ ${HEADER_CHECKS} == "true" ]]; then
+  echo "postfix >> Setting header_checks"
+  postconf -e smtp_header_checks="regexp:/etc/postfix/header_checks"
+fi
+
 if [ -n "${BOUNCE_ADDRESS}" ]; then
   echo "postfix >> Setting bounce address to $BOUNCE_ADDRESS"
   postconf -e notify_classes="bounce"

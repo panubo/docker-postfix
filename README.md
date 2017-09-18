@@ -19,6 +19,7 @@ General Postfix:
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
+- `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
 TLS parameters:
 
@@ -37,6 +38,10 @@ DKIM parameters:
 - `DKIM_SELECTOR` - DKIM key selector. Default `mail`. `<selector>._domainkey.<domain>` is used for resolving the public key in DNS.
 - `DKIM_INTERNALHOSTS` - Defaults to `MYNETWORKS`.
 - `DKIM_EXTERNALIGNORE` - Defaults to `MYNETWORKS`.
+- `DKIM_OVERSIGN_HEADERS` - Sets OversignHeaders. Default `From`.
+- `DKIM_SENDER_HEADERS` - Sets SenderHeaders. Default unset.
+- `DKIM_SIGN_HEADERS` - Sets SignHeaders. Default unset.
+- `DKIM_OMIT_HEADERS` - Sets OmitHeaders. Default unset.
 
 ## Usage Example
 

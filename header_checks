@@ -1,0 +1,8 @@
+/^Received:.*with ESMTPSA/    IGNORE
+/^Received:.*with ESMTPS/     IGNORE
+/^Received:.*with SMTP/       IGNORE
+/^X-Originating-IP:/          IGNORE
+/^X-Mailer:/                  IGNORE
+/^X-PHP-Originating-Script:/  IGNORE
+/^User-Agent:/                IGNORE
+/^Mime-Version:/              REPLACE Mime-Version: 1.0

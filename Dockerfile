@@ -37,6 +37,7 @@ RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
     rm -f /etc/opendkim.conf && \
     mkdir /etc/opendkim/
 
+COPY header_checks /etc/postfix/header_checks
 COPY opendkim.conf.sh /etc/
 
 COPY s6 /etc/s6/
