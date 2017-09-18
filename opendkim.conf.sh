@@ -42,35 +42,35 @@ cat > ${OUTPUT} <<EOF
 # /usr/share/doc/opendkim/examples/opendkim.conf.sample.
 
 # Log to syslog
-Syslog			yes
-SyslogSuccess   yes
+Syslog         yes
+SyslogSuccess  yes
 
 # Required to use local socket with MTAs that access the socket as a non-
 # privileged user (e.g. Postfix)
-UMask			002
+UMask  002
 
 ##  Create a socket through which your MTA can communicate.
-Socket	inet:8891@localhost
+Socket  inet:8891@localhost
 
 # Sign for example.com with key in /etc/mail/dkim.key using
 # selector '2007' (e.g. 2007._domainkey.example.com)
-Domain		${DKIM_DOMAINS}
-KeyFile		${DKIM_KEYFILE}
-Selector	${DKIM_SELECTOR}
+Domain    ${DKIM_DOMAINS}
+KeyFile   ${DKIM_KEYFILE}
+Selector  ${DKIM_SELECTOR}
 
 # Commonly-used options; the commented-out versions show the defaults.
-Canonicalization	relaxed
-Mode			s
-#SubDomains		no
-#ADSPAction            continue
+Canonicalization  relaxed
+Mode              s
+#SubDomains       no
+#ADSPAction       continue
 
-InternalHosts ${DKIM_INTERNALHOSTS}
-ExternalIgnoreList ${DKIM_EXTERNALIGNORE}
+InternalHosts       ${DKIM_INTERNALHOSTS}
+ExternalIgnoreList  ${DKIM_EXTERNALIGNORE}
 
 ##  Specifies whether or not the filter should generate report mail back
 ##  to senders when verification fails and an address for such a purpose
 ##  is provided. See opendkim.conf(5) for details.
-SendReports	yes
+SendReports  yes
 
 # Always oversign From (sign using actual From and a null From to prevent
 # malicious signatures header fields (From and/or others) between the signer
@@ -85,5 +85,5 @@ OmitHeaders      ${DKIM_OMIT_HEADERS}
 # List domains to use for RFC 6541 DKIM Authorized Third-Party Signatures
 # (ATPS) (experimental)
 
-#ATPSDomains		example.com
+#ATPSDomains  example.com
 EOF
