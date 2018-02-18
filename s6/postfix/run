@@ -89,7 +89,6 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
         USER=${MAP[1]}
         PASS=${MAP[2]}
         echo ">> Adding user ${HOST} with user: ${USER}."
-        email-smtp.us-east-1.amazonaws.com [username]:[password]
         echo "${HOST} [${USER}]:[${PASS}]" >> /etc/postfix/sasl-passwords
     done
     postmap hash:/etc/postfix/sasl-passwords
