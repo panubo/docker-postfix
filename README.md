@@ -15,7 +15,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 General Postfix:
 
 - `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
-- `RELAYHOST` -  Postfix `relayhost`. Default `empty`.
+- `RELAYHOST` -  Postfix `relayhost`. Default ''.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
