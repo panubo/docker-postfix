@@ -65,8 +65,10 @@ postconf -e mynetworks="$MYNETWORKS"
 echo "postfix >> Setting message_size_limit to $SIZELIMIT"
 postconf -e message_size_limit="$SIZELIMIT"
 
-echo "postfix >> Setting relayhost to ${RELAYHOST}"
-postconf -e relayhost="${RELAYHOST}"
+if [ -n "${RELAYHOST}" ]; then
+  echo "postfix >> Setting relayhost to ${RELAYHOST}"
+  postconf -e relayhost="${RELAYHOST}"
+fi
 
 echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
 postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
