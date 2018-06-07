@@ -1,9 +1,9 @@
 # Postfix SMTP Relay
 
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER Andrew Cutler <andrew@panubo.io>
 
-ENV S6_RELEASE=1.20.0 S6_VERSION=2.5.1.0 S6_SHA1=b798972cbf46e28f1c5d238f6703aba6edded57e
+ENV S6_RELEASE=1.20.0 S6_VERSION=2.7.1.1 S6_SHA1=b798972cbf46e28f1c5d238f6703aba6edded57e
 
 EXPOSE 25 587
 
