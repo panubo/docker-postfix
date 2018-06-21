@@ -14,5 +14,11 @@ if [ -z "$MYNETWORKS" ]; then
     echo "smtp >> Warning: MYNETWORKS not specified, allowing all private IPs"
 fi
 
+# Set timezone if given
+if [ ! -z "$TZ" ]; then
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    echo "smtp >> Info: setting timezone to $TZ"
+fi
+
 echo "Running command $@"
 exec "$@"
