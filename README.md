@@ -15,11 +15,17 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 General Postfix:
 
 - `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
-- `RELAYHOST` -  Postfix `relayhost`. Default `empty`.
+- `RELAYHOST` -  Postfix `relayhost`. Default ''.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
+
+Relayhost parameters:
+
+- `RELAYHOST` - Postfix `relayhost`. Default `empty`.
+- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`
+- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
 
 TLS parameters:
 
