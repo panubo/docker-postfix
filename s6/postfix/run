@@ -15,8 +15,8 @@ if [ ! "$(ls -A /var/spool/postfix)" ]; then
 fi
 
 # Defaults
-: ${SIZELIMIT:='15728640'}  # 10Meg with headroom
-: ${RELAYHOST:=""} # empty
+: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
+: "${RELAYHOST:=}" # empty
 
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
@@ -29,17 +29,17 @@ if [ "${USE_DKIM}" == "yes" ]; then
 fi
 
 # TLS
-: ${USE_TLS:='yes'}
-: ${TLS_KEY:='/etc/ssl/private/ssl-cert-snakeoil.key'}
-: ${TLS_CRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
-: ${TLS_CA:=''}
+: "${USE_TLS:=yes}"
+: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
+: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+: "${TLS_CA:=}"
 
 # General
-: ${POSTFIX_ADD_MISSING_HEADERS:='no'}
-: ${INET_PROTOCOLS:='all'}
+: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
+: "${INET_PROTOCOLS:=all}"
 
-echo "postfix >> Setting smtpd_use_tls to $USE_TLS"
-postconf -e smtpd_use_tls="$USE_TLS"
+echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
+postconf -e smtpd_use_tls="${USE_TLS}"
 
 if [ "${USE_TLS}" == "yes" ]; then
     if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
@@ -50,22 +50,22 @@ if [ "${USE_TLS}" == "yes" ]; then
     postconf -e smtp_tls_security_level="may"
     postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
-    postconf -e smtpd_tls_key_file="$TLS_KEY"
-    postconf -e smtpd_tls_cert_file="$TLS_CRT"
-    postconf -e smtpd_tls_CAfile="$TLS_CA"
+    postconf -e smtpd_tls_key_file="${TLS_KEY}"
+    postconf -e smtpd_tls_cert_file="${TLS_CRT}"
+    postconf -e smtpd_tls_CAfile="${TLS_CA}"
 fi
 
 # Configure Postfix General parameters
-echo "postfix >> Setting mailname to $MAILNAME"
-echo $MAILNAME > /etc/mailname
-postconf -e myhostname="$MAILNAME"
-postconf -e mydestination="$MAILNAME"
+echo "postfix >> Setting mailname to ${MAILNAME}"
+echo "${MAILNAME}" > /etc/mailname
+postconf -e myhostname="${MAILNAME}"
+postconf -e mydestination="${MAILNAME}"
 
-echo "postfix >> Setting mynetworks to $MYNETWORKS"
-postconf -e mynetworks="$MYNETWORKS"
+echo "postfix >> Setting mynetworks to ${MYNETWORKS}"
+postconf -e mynetworks="${MYNETWORKS}"
 
-echo "postfix >> Setting message_size_limit to $SIZELIMIT"
-postconf -e message_size_limit="$SIZELIMIT"
+echo "postfix >> Setting message_size_limit to ${SIZELIMIT}"
+postconf -e message_size_limit="${SIZELIMIT}"
 
 if [ -n "${RELAYHOST}" ]; then
   echo "postfix >> Setting relayhost to ${RELAYHOST}"
@@ -98,21 +98,21 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     postmap hash:/etc/postfix/sasl-passwords
 fi
 
-echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
-postconf -e always_add_missing_headers="$POSTFIX_ADD_MISSING_HEADERS"
+echo "postfix >> Setting always_add_missing_headers to ${POSTFIX_ADD_MISSING_HEADERS}"
+postconf -e always_add_missing_headers="${POSTFIX_ADD_MISSING_HEADERS}"
 
-echo "postfix >> Setting inet_protocols to $INET_PROTOCOLS"
-postconf -e inet_protocols="$INET_PROTOCOLS"
+echo "postfix >> Setting inet_protocols to ${INET_PROTOCOLS}"
+postconf -e inet_protocols="${INET_PROTOCOLS}"
 
-if [[ ${HEADER_CHECKS} == "true" ]]; then
+if [[ "${HEADER_CHECKS}" == "true" ]]; then
   echo "postfix >> Setting header_checks"
   postconf -e smtp_header_checks="regexp:/etc/postfix/header_checks"
 fi
 
 if [ -n "${BOUNCE_ADDRESS}" ]; then
-  echo "postfix >> Setting bounce address to $BOUNCE_ADDRESS"
+  echo "postfix >> Setting bounce address to ${BOUNCE_ADDRESS}"
   postconf -e notify_classes="bounce"
-  postconf -e bounce_notice_recipient="$BOUNCE_ADDRESS"
+  postconf -e bounce_notice_recipient="${BOUNCE_ADDRESS}"
 fi
 
 # exit cleanly
@@ -128,6 +128,6 @@ sleep 10 # wait for startup
 
 # watch for postfix exit
 MASTER_PID="$(cat /var/spool/postfix/pid/master.pid)"
-while kill -0 ${MASTER_PID} 2>/dev/null; do
-	sleep 1
+while kill -0 "${MASTER_PID}" 2>/dev/null; do
+  sleep 1
 done
