@@ -21,6 +21,12 @@ General Postfix:
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
+Relayhost parameters:
+
+- `RELAYHOST` - Postfix `relayhost`. Default `empty`.
+- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`
+- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+
 TLS parameters:
 
 - `USE_TLS` - Enable opportunistic TLS. Default `yes`

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 [ "$DEBUG" == 'true' ] && set -x
 
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
@@ -68,6 +70,32 @@ postconf -e message_size_limit="$SIZELIMIT"
 if [ -n "${RELAYHOST}" ]; then
   echo "postfix >> Setting relayhost to ${RELAYHOST}"
   postconf -e relayhost="${RELAYHOST}"
+fi
+
+if [ "${RELAYHOST_AUTH}" == "yes" ]; then
+    echo "postfix >> Enabling relayhost authentication"
+    touch /etc/postfix/sasl-passwords
+    postconf -e smtp_sasl_auth_enable=yes
+    postconf -e smtp_sasl_security_options=noanonymous
+    postconf -e smtp_sasl_password_maps=hash:/etc/postfix/sasl-passwords
+    postconf -e smtp_use_tls=yes
+    postconf -e smtp_tls_security_level=encrypt
+    postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
+fi
+
+if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
+    echo "postfix >> Generating relayhost password map"
+    truncate --size 0 /etc/postfix/sasl-passwords
+    IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
+    for P in "${PASSWORDMAP[@]}"; do
+        IFS=':' read -ra MAP <<< "$P"
+        HOST=${MAP[0]}
+        USER=${MAP[1]}
+        PASS=${MAP[2]}
+        echo ">> Adding user ${HOST} with user: ${USER}."
+        echo "${HOST} ${USER}:${PASS}" >> /etc/postfix/sasl-passwords
+    done
+    postmap hash:/etc/postfix/sasl-passwords
 fi
 
 echo "postfix >> Setting always_add_missing_headers to $POSTFIX_ADD_MISSING_HEADERS"
