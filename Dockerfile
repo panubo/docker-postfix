@@ -53,4 +53,4 @@ COPY s6 /etc/s6/
 COPY entry.sh /
 
 ENTRYPOINT ["/entry.sh"]
-CMD ["/usr/local/bin/s6-svscan", "/etc/s6"]
+CMD ["/usr/bin/s6-svscan", "/etc/s6"]
