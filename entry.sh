@@ -14,5 +14,5 @@ if [ -z "$MYNETWORKS" ]; then
     echo "smtp >> Warning: MYNETWORKS not specified, allowing all private IPs"
 fi
 
-echo "Running command $@"
+echo "Running command $*"
 exec "$@"

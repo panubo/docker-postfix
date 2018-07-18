@@ -15,7 +15,7 @@ RUN set -x \
 # Install packages
 RUN set -x \
   && apt-get update \
-  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules curl ca-certificates \
+  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules curl ca-certificates procps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   ;
