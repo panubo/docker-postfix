@@ -29,12 +29,12 @@ Relayhost parameters:
 
 TLS parameters:
 
-- `USE_TLS` - Enable opportunistic TLS. Default `yes`
+- `USE_TLS` - Enable opportunistic TLS. Default `yes` (options, `yes`, `no` and `always`)
 - `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''
 
-NB. A "snake-oil" certificate will generated on start if required.
+NB. A "snake-oil" certificate will be generated on start if required.
 
 DKIM parameters:
 
