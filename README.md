@@ -24,7 +24,7 @@ General Postfix:
 Relayhost parameters:
 
 - `RELAYHOST` - Postfix `relayhost`. Default `empty`.
-- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`
+- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
 
 TLS parameters:
