@@ -47,10 +47,11 @@ if [ "${USE_TLS}" == "yes" ]; then
         echo "postfix >> Generating snakeoil SSL cert"
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
-    echo "postfix >> Setting smtpd_tls parameters"
+    echo "postfix >> Setting smtp_tls parameters"
     postconf -e smtp_tls_security_level="$TLS_SECURITY_LEVEL"
     postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
+    echo "postfix >> Setting smtpd_tls parameters"
     postconf -e smtpd_tls_key_file="$TLS_KEY"
     postconf -e smtpd_tls_cert_file="$TLS_CRT"
     postconf -e smtpd_tls_CAfile="$TLS_CA"
@@ -79,7 +80,8 @@ if [ "${RELAYHOST_AUTH}" == "yes" ]; then
     postconf -e smtp_sasl_auth_enable=yes
     postconf -e smtp_sasl_security_options=noanonymous
     postconf -e smtp_sasl_password_maps=hash:/etc/postfix/sasl-passwords
-    postconf -e smtp_tls_security_level="$TLS_SECURITY_LEVEL"
+    # require encryption with relayhost auth
+    postconf -e smtp_use_tls=yes
     postconf -e smtp_tls_security_level=encrypt
     postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
 fi
@@ -93,7 +95,7 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
         HOST=${MAP[0]}
         USER=${MAP[1]}
         PASS=${MAP[2]}
-        echo ">> Adding user ${HOST} with user: ${USER}."
+        echo "postfix >> Adding user ${HOST} with user: ${USER}."
         echo "${HOST} ${USER}:${PASS}" >> /etc/postfix/sasl-passwords
     done
     postmap hash:/etc/postfix/sasl-passwords
