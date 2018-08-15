@@ -29,7 +29,8 @@ Relayhost parameters:
 
 TLS parameters:
 
-- `USE_TLS` - Enable opportunistic TLS. Default `yes` (options, `yes`, `no` and `always`)
+- `USE_TLS` - Enable opportunistic TLS. Default `yes` (options, `yes`, `no`)
+- `TLS_SECURITY_LEVEL` - Default `may` (options, `may`, `encrypt`, others see: [www.postfix.org/postconf.5.html#smtp_tls_security_level](http://www.postfix.org/postconf.5.html#smtp_tls_security_level)
 - `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''

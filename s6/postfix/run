@@ -30,6 +30,7 @@ fi
 
 # TLS
 : ${USE_TLS:='yes'}
+: ${TLS_SECURITY_LEVEL:='may'}
 : ${TLS_KEY:='/etc/ssl/private/ssl-cert-snakeoil.key'}
 : ${TLS_CRT:='/etc/ssl/certs/ssl-cert-snakeoil.pem'}
 : ${TLS_CA:=''}
@@ -41,17 +42,13 @@ fi
 echo "postfix >> Setting smtpd_use_tls to $USE_TLS"
 postconf -e smtpd_use_tls="$USE_TLS"
 
-if [ "${USE_TLS}" == "yes" ] || [ "${USE_TLS}" == "always" ]; then
+if [ "${USE_TLS}" == "yes" ]; then
     if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
         echo "postfix >> Generating snakeoil SSL cert"
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
     echo "postfix >> Setting smtpd_tls parameters"
-    if [ "${USE_TLS}" == "yes" ]; then
-        postconf -e smtp_tls_security_level="may"
-    else
-        postconf -e smtp_tls_security_level="encrypt"
-    fi
+    postconf -e smtp_tls_security_level="$TLS_SECURITY_LEVEL"
     postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
     postconf -e smtpd_tls_key_file="$TLS_KEY"
@@ -82,7 +79,7 @@ if [ "${RELAYHOST_AUTH}" == "yes" ]; then
     postconf -e smtp_sasl_auth_enable=yes
     postconf -e smtp_sasl_security_options=noanonymous
     postconf -e smtp_sasl_password_maps=hash:/etc/postfix/sasl-passwords
-    postconf -e smtp_use_tls=yes
+    postconf -e smtp_tls_security_level="$TLS_SECURITY_LEVEL"
     postconf -e smtp_tls_security_level=encrypt
     postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
 fi
