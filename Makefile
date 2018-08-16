@@ -1,4 +1,4 @@
-docker_tag 	= freinet/postfix-relay
+docker_tag 	= panubo/postfix:dev
 
 build:
 	docker build -t $(docker_tag) .
