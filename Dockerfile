@@ -1,41 +1,50 @@
 # Postfix SMTP Relay
 
-FROM debian:jessie
-MAINTAINER Andrew Cutler <andrew@panubo.io>
-
-ENV S6_RELEASE=1.20.0 S6_VERSION=2.5.1.0 S6_SHA1=b798972cbf46e28f1c5d238f6703aba6edded57e
+FROM debian:stretch
 
 EXPOSE 25 587
 
 # Preselections for installation
-RUN echo mail > /etc/hostname; \
-    echo "postfix postfix/main_mailer_type string Internet site" >> preseed.txt; \
-    echo "postfix postfix/mailname string mail.example.com" >> preseed.txt; \
-    debconf-set-selections preseed.txt && rm preseed.txt
+RUN set -x \
+  && echo mail > /etc/hostname \
+  && echo "postfix postfix/main_mailer_type string Internet site" >> preseed.txt \
+  && echo "postfix postfix/mailname string mail.example.com" >> preseed.txt \
+  && debconf-set-selections preseed.txt && rm preseed.txt \
+  ;
 
 # Install packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools curl ca-certificates && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN set -x \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules curl ca-certificates procps \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  ;
 
 # Install s6
-RUN DIR=$(mktemp -d) && cd ${DIR} && \
-    curl -s -L https://github.com/just-containers/skaware/releases/download/v${S6_RELEASE}/s6-${S6_VERSION}-linux-amd64-bin.tar.gz -o s6.tar.gz && \
-    echo "${S6_SHA1} s6.tar.gz" | sha1sum -c - && \
-    tar -xzf s6.tar.gz -C /usr/local/ && \
-    rm -rf ${DIR}
+RUN set -x \
+  && S6_VERSION=2.7.1.1 \
+  && S6_CHECKSUM=42ad7f2ae6028e7321e2acef432e7b9119bab5fb8748581ca729a2f92dacf613 \
+  && EXECLINE_VERSION=2.5.0.0 \
+  && EXECLINE_CHECKSUM=f65fba9eaea5d10d082ac75452595958af1f9ca8d298055539597de2f7b713cd \
+  && SKAWARE_RELEASE=1.21.5 \
+  && curl -sSf -L https://github.com/just-containers/skaware/releases/download/v${SKAWARE_RELEASE}/s6-${S6_VERSION}-linux-amd64-bin.tar.gz -o /tmp/s6-${S6_VERSION}-linux-amd64-bin.tar.gz \
+  && curl -sSf -L https://github.com/just-containers/skaware/releases/download/v${SKAWARE_RELEASE}/execline-${EXECLINE_VERSION}-linux-amd64-bin.tar.gz -o /tmp/execline-${EXECLINE_VERSION}-linux-amd64-bin.tar.gz \
+  && printf "%s  %s\n" "${S6_CHECKSUM}" "s6-${S6_VERSION}-linux-amd64-bin.tar.gz" "${EXECLINE_CHECKSUM}" "execline-${EXECLINE_VERSION}-linux-amd64-bin.tar.gz" > /tmp/SHA256SUM \
+  && ( cd /tmp; sha256sum -c SHA256SUM; ) \
+  && tar -C /usr -zxf /tmp/s6-${S6_VERSION}-linux-amd64-bin.tar.gz \
+  && tar -C /usr -zxf /tmp/execline-${EXECLINE_VERSION}-linux-amd64-bin.tar.gz \
+  && rm -rf /tmp/* \
+  ;
 
 # Configure Postfix / dkim
-RUN postconf -e smtpd_banner="\$myhostname ESMTP" && \
-    # Enable submission
-    postconf -Me submission/inet="submission inet n - - - - smtpd" && \
-    # Cache spool dir as template
-    cp -a /var/spool/postfix /var/spool/postfix.cache && \
-    # Remove snakeoil certs
-    rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem && \
-    rm -f /etc/opendkim.conf && \
-    mkdir /etc/opendkim/
+RUN set -x \
+  && postconf -e smtpd_banner="\$myhostname ESMTP" \
+  && postconf -Me submission/inet="submission inet n - - - - smtpd" \
+  && cp -a /var/spool/postfix /var/spool/postfix.cache \
+  && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
+  && rm -f /etc/opendkim.conf \
+  && mkdir /etc/opendkim/ \
+  ;
 
 COPY header_checks /etc/postfix/header_checks
 COPY opendkim.conf.sh /etc/
@@ -44,4 +53,4 @@ COPY s6 /etc/s6/
 COPY entry.sh /
 
 ENTRYPOINT ["/entry.sh"]
-CMD ["/usr/local/bin/s6-svscan", "/etc/s6"]
+CMD ["/usr/bin/s6-svscan", "/etc/s6"]

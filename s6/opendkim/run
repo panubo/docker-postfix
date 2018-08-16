@@ -10,12 +10,12 @@ unset LANG
 cd /etc/s6/opendkim
 
 # Defaults
-: ${USE_DKIM:='no'}
+: "${USE_DKIM:=no}"
 
 # Exit if dkim disabled
 if [ "${USE_DKIM}" != "yes" ]; then
 	echo "dkim >> USE_DKIM = ${USE_DKIM}. Not starting opendkim."
-	s6-svc -d $(pwd)
+	s6-svc -d "$(pwd)"
 	exit
 fi
 
@@ -32,6 +32,6 @@ sleep 10 # wait for startup
 
 # watch for opendkim exit
 OPENDKIM_PID="$(pidof opendkim)"
-while kill -0 ${OPENDKIM_PID} 2>/dev/null; do
-	sleep 1
+while kill -0 "${OPENDKIM_PID}" 2>/dev/null; do
+  sleep 1
 done

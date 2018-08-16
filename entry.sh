@@ -21,5 +21,5 @@ if [ ! -z "${TZ}" ]; then
     echo "${TZ}" > /etc/timezone
 fi
 
-echo "Running command $@"
+echo "Running command $*"
 exec "$@"
