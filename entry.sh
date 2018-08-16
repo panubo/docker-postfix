@@ -16,8 +16,9 @@ fi
 
 # Set timezone if given
 if [ ! -z "$TZ" ]; then
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-    echo "smtp >> Info: setting timezone to $TZ"
+    echo "smtp >> Info: setting timezone to ${TZ}"
+    ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+    echo "${TZ}" > /etc/timezone
 fi
 
 echo "Running command $@"
