@@ -12,6 +12,11 @@ cd /etc/postfix
 # Copy default spool from cache
 if [ ! "$(ls -A /var/spool/postfix)" ]; then
    cp -a /var/spool/postfix.cache/* /var/spool/postfix/
+else
+  # Fix spool directory permissions
+  chgrp -R postdrop /var/spool/postfix/public
+  chgrp -R postdrop /var/spool/postfix/maildrop
+  postfix set-permissions
 fi
 
 # Defaults
@@ -123,6 +128,10 @@ trap "{ /usr/sbin/service postfix stop; }" EXIT
 
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
+
+# check postfix is happy
+echo "postfix >> Checking Postfix Configuration"
+postfix check
 
 # start postfix
 /usr/sbin/service postfix start
