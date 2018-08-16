@@ -1,8 +1,8 @@
-# Postfix Docker Container
+# Postfix Docker Image
 
 Postfix SMTP Relay.
 
-Drop-in container for SMTP relaying. Use wherever a connected service
+Drop-in Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 (if enabled and configured).
 
