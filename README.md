@@ -15,26 +15,26 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 General Postfix:
 
 - `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
-- `RELAYHOST` -  Postfix `relayhost`. Default ''.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
-Relayhost parameters:
+Relay host parameters:
 
-- `RELAYHOST` - Postfix `relayhost`. Default `empty`.
+- `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
 
 TLS parameters:
 
-- `USE_TLS` - Enable opportunistic TLS. Default `yes`
+- `USE_TLS` - Enable TLS. Default `yes` (options, `yes`, `no`)
+- `TLS_SECURITY_LEVEL` - Default `may` (opportunistic) (options, `may`, `encrypt`, others see: [www.postfix.org/postconf.5.html#smtp_tls_security_level](http://www.postfix.org/postconf.5.html#smtp_tls_security_level)
 - `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''
 
-NB. A "snake-oil" certificate will generated on start if required.
+NB. A "snake-oil" certificate will be generated on start if required.
 
 DKIM parameters:
 
