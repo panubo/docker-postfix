@@ -48,7 +48,7 @@ if [ "${USE_TLS}" == "yes" ]; then
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
     echo "postfix >> Setting smtp_tls parameters"
-    postconf -e smtp_tls_security_level="$TLS_SECURITY_LEVEL"
+    postconf -e smtp_tls_security_level="${TLS_SECURITY_LEVEL}"
     postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
     echo "postfix >> Setting smtpd_tls parameters"
