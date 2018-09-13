@@ -50,6 +50,10 @@ DKIM parameters:
 - `DKIM_SIGN_HEADERS` - Sets SignHeaders. Default unset.
 - `DKIM_OMIT_HEADERS` - Sets OmitHeaders. Default unset.
 
+Client Auth parameters:
+
+- `SMTPD_USERS` - SMTPD Users `<user1>:<password1>,<user2>:<password2>`
+
 ## Usage Example
 
 `docker run -e MAILNAME=mail.example.com panubo/postfix`
@@ -58,6 +62,10 @@ DKIM parameters:
 
 No volumes are defined. If you want persistent spool storage then mount
 `/var/spool/postfix` outside of the container.
+
+## Ports
+
+Ports `25`, `586` and `2525` are enabled.
 
 ## Test email
 
