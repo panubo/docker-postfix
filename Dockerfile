@@ -2,7 +2,7 @@
 
 FROM debian:stretch
 
-EXPOSE 25 587
+EXPOSE 25 587 2525
 
 # Preselections for installation
 RUN set -x \
@@ -39,7 +39,8 @@ RUN set -x \
 # Configure Postfix / dkim
 RUN set -x \
   && postconf -e smtpd_banner="\$myhostname ESMTP" \
-  && postconf -Me submission/inet="submission inet n - - - - smtpd" \
+  && postconf -Me submission/inet="submission inet n - y - - smtpd" \
+  && postconf -Me 2525/inet="2525 inet n - y - - smtpd" \
   && cp -a /var/spool/postfix /var/spool/postfix.cache \
   && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
   && rm -f /etc/opendkim.conf \
