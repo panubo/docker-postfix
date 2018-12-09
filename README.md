@@ -21,6 +21,14 @@ General Postfix:
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
+**Common rate limiting parameters:**
+
+These are common parameters to rate limit outbound mail.
+
+- `SMTP_DESTINATION_CONCURRENCY_LIMIT` - Number of concurrent connections per receiving domain.
+- `SMTP_DESTINATION_RATE_DELAY` - Additional delay (eg `5s`) between messages to the same receiving domain.
+- `SMTP_EXTRA_RECIPIENT_LIMIT` - Limit the number of recipients of each message sent to the receiving domain.
+
 Relay host parameters:
 
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
