@@ -142,6 +142,22 @@ if [ ! -z "${SMTPD_USERS}" ]; then
   sed -i -E 's/etc\/host\.conf etc\/nsswitch\.conf etc\/nss_mdns\.config"/etc\/host.conf etc\/nsswitch.conf etc\/nss_mdns.config etc\/sasldb2"/' /usr/lib/postfix/configure-instance.sh
 fi
 
+# Common rate limiting
+if [ ! -z "${SMTP_DESTINATION_CONCURRENCY_LIMIT}" ]; then
+  echo "postfix >> Setting smtp_destination_concurrency_limit"
+  postconf -e smtp_destination_concurrency_limit="${SMTP_DESTINATION_CONCURRENCY_LIMIT}"
+fi
+
+if [ ! -z "${SMTP_DESTINATION_RATE_DELAY}" ]; then
+  echo "postfix >> Setting smtp_destination_rate_delay"
+  postconf -e smtp_destination_rate_delay="${SMTP_DESTINATION_RATE_DELAY}"
+fi
+
+if [ ! -z "${SMTP_EXTRA_RECIPIENT_LIMIT}" ]; then
+  echo "postfix >> Setting smtp_extra_recipient_limit"
+  postconf -e smtp_extra_recipient_limit="${SMTP_EXTRA_RECIPIENT_LIMIT}"
+fi
+
 # exit cleanly
 trap "{ /usr/sbin/service postfix stop; }" EXIT
 
