@@ -75,7 +75,7 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 
 ## Developing
 
-See the `Makefile` for make targets. eg To build run `make build`.
+See the `Makefile` for make targets.
 
 ## Status
 
