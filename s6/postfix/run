@@ -64,7 +64,7 @@ fi
 
 # Configure Postfix General parameters
 echo "postfix >> Setting mailname to ${MAILNAME}"
-echo "${MAILNAME}" > /etc/mailname
+postconf -e myorigin="${MAILNAME}"
 postconf -e myhostname="${MAILNAME}"
 postconf -e mydestination="${MAILNAME}"
 
