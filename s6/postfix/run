@@ -106,6 +106,36 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     postmap hash:/etc/postfix/sasl-passwords
 fi
 
+# Virtual Alias Maps - supporting reading alias map or base64 encoded regex style
+if [ -n "${VIRTUAL_ALIAS_MAP}" ] || [ -n "${VIRTUAL_ALIAS_REGEX_BASE64}" ]; then
+    declare -a postconf_alias_maps
+    if [ -n "${VIRTUAL_ALIAS_MAP}" ]; then
+        echo "postfix >> Generating virtual host map"
+        truncate --size 0 /etc/postfix/virtual
+        IFS=',' read -r -a ALIASMAP <<< "${VIRTUAL_ALIAS_MAP}"
+        for A in "${ALIASMAP[@]}"; do
+            IFS=':' read -ra MAP <<< "$A"
+            VIRT=${MAP[0]}
+            DEST=${MAP[1]}
+            echo "postfix >> Adding virtual ${VIRT} to map to dest: ${DEST}."
+            echo "${VIRT} ${DEST}" >> /etc/postfix/virtual
+        done
+        postmap hash:/etc/postfix/virtual
+        postconf_alias_maps+=(hash:/etc/postfix/virtual)
+    fi
+    if [ -n "${VIRTUAL_ALIAS_REGEX_BASE64}" ]; then
+        echo "postfix >> Base64 decoding '${VIRTUAL_ALIAS_REGEX_BASE64}' into file /etc/postfix/virtual-regex"
+        truncate --size 0 /etc/postfix/virtual-regex
+        echo $VIRTUAL_ALIAS_REGEX_BASE64 | base64 -d >> /etc/postfix/virtual-regex
+        postmap /etc/postfix/virtual-regex
+        postconf_alias_maps+=(regexp:/etc/postfix/virtual-regex)
+    fi
+    echo "postfix >> Configuring postconf virtual_alias_maps"
+    combined_val=$(printf ",%s" "${postconf_alias_maps[@]}")
+    combined_val=${combined_val:1}
+    postconf -e virtual_alias_maps=$combined_val
+fi
+
 echo "postfix >> Setting always_add_missing_headers to ${POSTFIX_ADD_MISSING_HEADERS}"
 postconf -e always_add_missing_headers="${POSTFIX_ADD_MISSING_HEADERS}"
 
