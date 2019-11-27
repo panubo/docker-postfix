@@ -23,9 +23,9 @@ General Postfix:
 
 Relay host parameters:
 
-- `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
+- `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
-- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:587|user1|pass2,mail2.example.com|user2|pass2`. Note: Delimiter usage has changed.
 
 TLS parameters:
 
@@ -76,6 +76,13 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 ## Developing
 
 See the `Makefile` for make targets.
+
+## Releases
+
+For production usage, please use a versioned release rather than the floating 'latest' tag.
+
+See the [releases](https://github.com/panubo/docker-postfix/releases) for tag usage
+and release notes.
 
 ## Status
 
