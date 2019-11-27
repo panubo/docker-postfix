@@ -4,6 +4,21 @@ set -e
 
 [ "$DEBUG" == 'true' ] && set -x
 
+# Defaults
+: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
+: "${RELAYHOST:=}" # empty
+
+# TLS
+: "${USE_TLS:=yes}"
+: "${TLS_SECURITY_LEVEL:=may}"
+: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
+: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+: "${TLS_CA:=}"
+
+# General
+: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
+: "${INET_PROTOCOLS:=all}"
+
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
 unset LANG
 
@@ -19,10 +34,6 @@ else
   postfix set-permissions
 fi
 
-# Defaults
-: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
-: "${RELAYHOST:=}" # empty
-
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
     # TODO s6-svwait for dkim
@@ -32,17 +43,6 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e smtpd_milters="inet:localhost:8891"
     postconf -e non_smtpd_milters="inet:localhost:8891"
 fi
-
-# TLS
-: "${USE_TLS:=yes}"
-: "${TLS_SECURITY_LEVEL:=may}"
-: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
-: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
-: "${TLS_CA:=}"
-
-# General
-: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
-: "${INET_PROTOCOLS:=all}"
 
 echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
 postconf -e smtpd_use_tls="${USE_TLS}"
