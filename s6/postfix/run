@@ -123,23 +123,12 @@ if [ -n "${BOUNCE_ADDRESS}" ]; then
   postconf -e bounce_notice_recipient="${BOUNCE_ADDRESS}"
 fi
 
-# exit cleanly
-trap "{ /usr/sbin/service postfix stop; }" EXIT
-
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
 
-# check postfix is happy
+# check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
 postfix check
 
-# start postfix
-/usr/sbin/service postfix start
-
-sleep 10 # wait for startup
-
-# watch for postfix exit
-MASTER_PID="$(cat /var/spool/postfix/pid/master.pid)"
-while kill -0 "${MASTER_PID}" 2>/dev/null; do
-  sleep 1
-done
+# start postfix in foreground
+exec /usr/sbin/postfix start-fg
