@@ -49,7 +49,7 @@ Client authentication is used to authenticate relay clients. Client authenticati
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''
 
-NB. A "snake-oil" certificate will be generated on start if required.
+NB. A self-signed ("snake-oil") certificate will be generated on start if required.
 
 **DKIM parameters:**
 
