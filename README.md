@@ -29,7 +29,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 
 **Client authentication parameters:**
 
-Client authentication can be used to authenticate relay clients to this container. Authenticated client can use this container as a relay. This is not meant for local delivery. Client authentication can be used as an alternative to `MYNETWORKS`.
+Client authentication is used to authenticate relay clients. Client authentication can be used in conjuction with, or as an alternative to `MYNETWORKS`.
 
 - `SMTPD_USERS` - SMTPD Users `user1:password1,user2:password2`
 
