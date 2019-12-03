@@ -13,7 +13,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 - `LOGOUTPUT` - Syslog log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
 - `TZ` - set timezone. This is used by Postfix to create `Received` headers. Default `UTC`.
 
-General Postfix:
+**General Postfix:**
 
 - `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
@@ -21,13 +21,19 @@ General Postfix:
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
-Relay host parameters:
+**Relay host parameters:**
 
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. Values `yes|no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
 
-TLS parameters:
+**Client authentication parameters:**
+
+Client authentication is used to authenticate relay clients. Client authentication can be used in conjuction with, or as an alternative to `MYNETWORKS`.
+
+- `SMTPD_USERS` - SMTPD Users `user1:password1,user2:password2`
+
+**TLS parameters:**
 
 - `USE_TLS` - Enable TLS. Default `yes` (options, `yes`, `no`)
 - `TLS_SECURITY_LEVEL` - Default `may` (opportunistic) (options, `may`, `encrypt`, others see: [www.postfix.org/postconf.5.html#smtp_tls_security_level](http://www.postfix.org/postconf.5.html#smtp_tls_security_level)
@@ -37,7 +43,7 @@ TLS parameters:
 
 NB. A "snake-oil" certificate will be generated on start if required.
 
-DKIM parameters:
+**DKIM parameters:**
 
 - `USE_DKIM` - Enable DKIM. Default `no`
 - `DKIM_KEYFILE` - DKIM Keyfile location. Default `/etc/opendkim/dkim.key`
