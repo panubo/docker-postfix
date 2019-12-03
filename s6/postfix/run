@@ -138,7 +138,6 @@ if [ ! -z "${SMTPD_USERS}" ]; then
     echo "postfix >> Adding user SASL user: ${user}"
     echo "${password}" | saslpasswd2 -p -c -u "${MAILNAME}" "${user}"
   done < <(echo "${SMTPD_USERS}" | tr ',' '\n')
-  echo "INFO >> \"saslpasswd2: error deleting entry from sasldb: BDB0073 DB_NOTFOUND: No matching key/data pair found\" can be ignored see https://github.com/cyrusimap/cyrus-sasl/issues/264"
   chown postfix:sasl /etc/sasldb2
   # /etc/sasldb2 needs to be in the postfix chroot, this is a bit of a hack
   sed -i -E 's/etc\/host\.conf etc\/nsswitch\.conf etc\/nss_mdns\.config"/etc\/host.conf etc\/nsswitch.conf etc\/nss_mdns.config etc\/sasldb2"/' /usr/lib/postfix/configure-instance.sh
