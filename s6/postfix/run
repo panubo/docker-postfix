@@ -4,6 +4,21 @@ set -e
 
 [ "$DEBUG" == 'true' ] && set -x
 
+# Defaults
+: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
+: "${RELAYHOST:=}" # empty
+
+# TLS
+: "${USE_TLS:=yes}"
+: "${TLS_SECURITY_LEVEL:=may}"
+: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
+: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+: "${TLS_CA:=}"
+
+# General
+: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
+: "${INET_PROTOCOLS:=all}"
+
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
 unset LANG
 
@@ -19,10 +34,6 @@ else
   postfix set-permissions
 fi
 
-# Defaults
-: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
-: "${RELAYHOST:=}" # empty
-
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
     # TODO s6-svwait for dkim
@@ -32,17 +43,6 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e smtpd_milters="inet:localhost:8891"
     postconf -e non_smtpd_milters="inet:localhost:8891"
 fi
-
-# TLS
-: "${USE_TLS:=yes}"
-: "${TLS_SECURITY_LEVEL:=may}"
-: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
-: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
-: "${TLS_CA:=}"
-
-# General
-: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
-: "${INET_PROTOCOLS:=all}"
 
 echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
 postconf -e smtpd_use_tls="${USE_TLS}"
@@ -64,7 +64,7 @@ fi
 
 # Configure Postfix General parameters
 echo "postfix >> Setting mailname to ${MAILNAME}"
-echo "${MAILNAME}" > /etc/mailname
+postconf -e myorigin="${MAILNAME}"
 postconf -e myhostname="${MAILNAME}"
 postconf -e mydestination="${MAILNAME}"
 
@@ -96,7 +96,7 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     truncate --size 0 /etc/postfix/sasl-passwords
     IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
     for P in "${PASSWORDMAP[@]}"; do
-        IFS=':' read -ra MAP <<< "$P"
+        IFS='|' read -ra MAP <<< "$P"
         HOST=${MAP[0]}
         USER=${MAP[1]}
         PASS=${MAP[2]}
@@ -123,23 +123,15 @@ if [ -n "${BOUNCE_ADDRESS}" ]; then
   postconf -e bounce_notice_recipient="${BOUNCE_ADDRESS}"
 fi
 
-# exit cleanly
-trap "{ /usr/sbin/service postfix stop; }" EXIT
-
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
 
-# check postfix is happy
+# configure instance (populate etc)
+/usr/lib/postfix/configure-instance.sh
+
+# check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
 postfix check
 
-# start postfix
-/usr/sbin/service postfix start
-
-sleep 10 # wait for startup
-
-# watch for postfix exit
-MASTER_PID="$(cat /var/spool/postfix/pid/master.pid)"
-while kill -0 "${MASTER_PID}" 2>/dev/null; do
-  sleep 1
-done
+# start postfix in foreground
+exec /usr/sbin/postfix start-fg
