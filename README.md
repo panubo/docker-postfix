@@ -23,7 +23,7 @@ General Postfix:
 
 **Common rate limiting parameters:**
 
-These are common parameters to rate limit outbound mail.
+These are common parameters to rate limit outbound mail:
 
 - `SMTP_DESTINATION_CONCURRENCY_LIMIT` - Number of concurrent connections per receiving domain.
 - `SMTP_DESTINATION_RATE_DELAY` - Additional delay (eg `5s`) between messages to the same receiving domain.
