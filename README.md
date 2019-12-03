@@ -25,7 +25,7 @@ Relay host parameters:
 
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. Values `yes|no`.
-- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:587|user1|pass2,mail2.example.com|user2|pass2`. Note: Delimiter usage has changed.
+- `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
 
 TLS parameters:
 
@@ -65,7 +65,7 @@ docker run --rm -t -i \
   -e MAILNAME=mail1.example.com \
   -e RELAYHOST_AUTH='yes' \
   -e RELAYHOST='[smtp.sendgrid.net]:587' \
-  -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587|apikey|<apikey goes here>" \
+  -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587:apikey:<apikey goes here>" \
   panubo/postfix:latest
 ```
 

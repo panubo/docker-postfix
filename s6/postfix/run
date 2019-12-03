@@ -96,10 +96,19 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     truncate --size 0 /etc/postfix/sasl-passwords
     IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
     for P in "${PASSWORDMAP[@]}"; do
-        IFS='|' read -ra MAP <<< "$P"
-        HOST=${MAP[0]}
-        USER=${MAP[1]}
-        PASS=${MAP[2]}
+        IFS=':' read -ra MAP <<< "$P"
+        if [[ "${#MAP[@]}" -eq 3 ]]; then
+          HOST=${MAP[0]}
+          USER=${MAP[1]}
+          PASS=${MAP[2]}
+        elif [[ "${#MAP[@]}" -eq 4 ]]; then
+          HOST="${MAP[0]}:${MAP[1]}"
+          USER=${MAP[2]}
+          PASS=${MAP[3]}
+        else
+          echo "Bad password map"
+          exit 1
+        fi
         echo "postfix >> Adding user ${HOST} with user: ${USER}."
         echo "${HOST} ${USER}:${PASS}" >> /etc/postfix/sasl-passwords
     done
