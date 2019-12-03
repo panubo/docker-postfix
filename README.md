@@ -24,7 +24,7 @@ General Postfix:
 Relay host parameters:
 
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
-- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
+- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. Values `yes|no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:587|user1|pass2,mail2.example.com|user2|pass2`. Note: Delimiter usage has changed.
 
 TLS parameters:
@@ -52,7 +52,22 @@ DKIM parameters:
 
 ## Usage Example
 
-`docker run -e MAILNAME=mail.example.com panubo/postfix`
+Simple example:
+
+`docker run -e MAILNAME=mail.example.com panubo/postfix:latest`
+
+Usage with SendGrid:
+
+```
+docker run --rm -t -i \
+  --name smtp \
+  -v $(pwd)/spool:/var/spool/postfix:rw \
+  -e MAILNAME=mail1.example.com \
+  -e RELAYHOST_AUTH='yes' \
+  -e RELAYHOST='[smtp.sendgrid.net]:587' \
+  -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587|apikey|<apikey goes here>" \
+  panubo/postfix:latest
+```
 
 ## Volumes
 
@@ -61,7 +76,7 @@ No volumes are defined. If you want persistent spool storage then mount
 
 ## Test email
 
-To send a test email via the command line, make sure heirloom-mailx is installed.
+To send a test email via the command line, make sure heirloom-mailx (aka bsd-mailx) is installed.
 
 ```
 echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test email\n\nThis is a test email message" | mailx -v -S smtp=smtp://... -S from=bill@example.com -t
