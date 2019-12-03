@@ -91,6 +91,10 @@ docker run --rm -t -i \
 No volumes are defined. If you want persistent spool storage then mount
 `/var/spool/postfix` outside of the container.
 
+## Ports
+
+Ports `25`, `587` and `2525` are enabled.
+
 ## Test email
 
 To send a test email via the command line, make sure heirloom-mailx (aka bsd-mailx) is installed.
