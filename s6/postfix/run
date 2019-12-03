@@ -126,6 +126,9 @@ fi
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
 
+# configure instance (populate etc)
+/usr/lib/postfix/configure-instance.sh
+
 # check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
 postfix check
