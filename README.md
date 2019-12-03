@@ -8,7 +8,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 
 ## Environment Variables
 
-- `MAILNAME` - set this to a legitimate FQDN hostname for this service (required).
+- `MAILNAME` - set this to a legitimate FQDN hostname for this service (required). (example, `mail.example.com`)
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay. Default `127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`
 - `LOGOUTPUT` - Syslog log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
 - `TZ` - set timezone. This is used by Postfix to create `Received` headers. Default `UTC`.
@@ -21,7 +21,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If "true" activates a set of pre-configured header_checks.
 
-**Common rate limiting parameters:**
+**Rate limiting parameters:**
 
 These are common parameters to rate limit outbound mail:
 
@@ -32,7 +32,7 @@ These are common parameters to rate limit outbound mail:
 **Relay host parameters:**
 
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`)
-- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. Values `yes|no`.
+- `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
 
 **Client authentication parameters:**
@@ -53,7 +53,7 @@ NB. A "snake-oil" certificate will be generated on start if required.
 
 **DKIM parameters:**
 
-- `USE_DKIM` - Enable DKIM. Default `no`
+- `USE_DKIM` - Enable DKIM. Default `no` (options, `yes`, `no`)
 - `DKIM_KEYFILE` - DKIM Keyfile location. Default `/etc/opendkim/dkim.key`
 - `DKIM_DOMAINS` - Domains to sign. Defaults to `MAILNAME`. Multiple domains will use the same key and selector.
 - `DKIM_SELECTOR` - DKIM key selector. Default `mail`. `<selector>._domainkey.<domain>` is used for resolving the public key in DNS.
