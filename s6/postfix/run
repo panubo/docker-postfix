@@ -96,10 +96,19 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     truncate --size 0 /etc/postfix/sasl-passwords
     IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
     for P in "${PASSWORDMAP[@]}"; do
-        IFS='|' read -ra MAP <<< "$P"
-        HOST=${MAP[0]}
-        USER=${MAP[1]}
-        PASS=${MAP[2]}
+        IFS=':' read -ra MAP <<< "$P"
+        if [[ "${#MAP[@]}" -eq 3 ]]; then
+          HOST=${MAP[0]}
+          USER=${MAP[1]}
+          PASS=${MAP[2]}
+        elif [[ "${#MAP[@]}" -eq 4 ]]; then
+          HOST="${MAP[0]}:${MAP[1]}"
+          USER=${MAP[2]}
+          PASS=${MAP[3]}
+        else
+          echo "Bad password map"
+          exit 1
+        fi
         echo "postfix >> Adding user ${HOST} with user: ${USER}."
         echo "${HOST} ${USER}:${PASS}" >> /etc/postfix/sasl-passwords
     done
@@ -137,6 +146,26 @@ fi
 if [ ! -z "${SMTP_EXTRA_RECIPIENT_LIMIT}" ]; then
   echo "postfix >> Setting smtp_extra_recipient_limit"
   postconf -e smtp_extra_recipient_limit="${SMTP_EXTRA_RECIPIENT_LIMIT}"
+fi
+
+# Client Authentication (SASL)
+if [ ! -z "${SMTPD_USERS}" ]; then
+  echo "postfix >> Setting smtpd sasl auth"
+  postconf -e smtpd_sasl_auth_enable="yes"
+  postconf -e broken_sasl_auth_clients="yes"
+  postconf -e smtpd_sasl_local_domain='$myhostname'
+  printf "%s\n" \
+    "pwcheck_method: auxprop" \
+    "auxprop_plugin: sasldb" \
+    "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM" \
+  > /etc/postfix/sasl/smtpd.conf
+  while IFS=':' read -r user password; do
+    echo "postfix >> Adding user SASL user: ${user}"
+    echo "${password}" | saslpasswd2 -p -c -u "${MAILNAME}" "${user}"
+  done < <(echo "${SMTPD_USERS}" | tr ',' '\n')
+  chown postfix:sasl /etc/sasldb2
+  # /etc/sasldb2 needs to be in the postfix chroot, this is a bit of a hack
+  sed -i -E 's/etc\/host\.conf etc\/nsswitch\.conf etc\/nss_mdns\.config"/etc\/host.conf etc\/nsswitch.conf etc\/nss_mdns.config etc\/sasldb2"/' /usr/lib/postfix/configure-instance.sh
 fi
 
 # Cleanup stale pids incase we hadn't exited cleanly
