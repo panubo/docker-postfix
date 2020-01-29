@@ -21,5 +21,10 @@ if [ ! -z "${TZ}" ]; then
     echo "${TZ}" > /etc/timezone
 fi
 
+#Allow local customization scripts that run on every startup
+if [ -d /docker-entrypoint.d/ ]; then
+    /bin/run-parts -v /docker-entrypoint.d
+fi
+
 echo "Running command $*"
 exec "$@"
