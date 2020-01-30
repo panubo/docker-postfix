@@ -50,6 +50,10 @@ DKIM parameters:
 - `DKIM_SIGN_HEADERS` - Sets SignHeaders. Default unset.
 - `DKIM_OMIT_HEADERS` - Sets OmitHeaders. Default unset.
 
+## Custom Scripts
+
+Executable shell scripts and binaries can be mounted or copied in to `/etc/entrypoint.d`. These will be run when the container is launched but before postfix is started. These can be used to customise the behaviour of the container.
+
 ## Usage Example
 
 `docker run -e MAILNAME=mail.example.com panubo/postfix`
