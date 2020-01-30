@@ -21,5 +21,10 @@ if [ ! -z "${TZ}" ]; then
     echo "${TZ}" > /etc/timezone
 fi
 
+#Allow local customization scripts that run on every startup
+if [ -d /etc/entrypoint.d/ ]; then
+    /bin/run-parts -v /etc/entrypoint.d
+fi
+
 echo "Running command $*"
 exec "$@"
