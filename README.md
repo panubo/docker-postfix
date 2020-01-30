@@ -4,7 +4,8 @@ Postfix SMTP Relay.
 
 Drop-in Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM
-(if enabled and configured).
+(if enabled and configured). Additionally offers support for Virtual
+alias regex (useful for address rewriting) and maps.
 
 ## Environment Variables
 
@@ -15,7 +16,7 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 
 General Postfix:
 
-- `SIZELIMIT` -  Postfix `message_size_limit`. Default `15728640`.
+- `SIZELIMIT` - Postfix `message_size_limit`. Default `15728640`.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
@@ -26,6 +27,11 @@ Relay host parameters:
 - `RELAYHOST` - Postfix `relayhost`. Default ''. (example `mail.example.com:25`)
 - `RELAYHOST_AUTH` - Enable authentication for relayhost. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`.
 - `RELAYHOST_PASSWORDMAP` - relayhost password map in format: `RELAYHOST_PASSWORDMAP=mail1.example.com:user1:pass2,mail2.example.com:user2:pass2`
+
+Virtual parameters:
+
+- `VIRTUAL_ALIAS_MAP` - virtual alias map in format: `VIRTUAL_ALIAS_MAP=someone@somewhere.com:local_user,postmaster@example.net:root`
+- `VIRTUAL_ALIAS_REGEX_BASE64` - virtual alias regex base64 encoded. (example `VIRTUAL_ALIAS_REGEX_BASE64=aWYgIS8uKmV4YW1wbGUuY29tLwovLiovIHJlZGlyZWN0LWFkZHJlc3NAc29tZXdoZXJlLm5ldAplbmRpZgo=`)
 
 TLS parameters:
 
