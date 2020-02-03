@@ -45,6 +45,8 @@ RUN set -x \
   && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
   && rm -f /etc/opendkim.conf \
   && mkdir /etc/opendkim/ \
+  && echo "devnull: /dev/null" >> /etc/aliases \
+  && newaliases \
   ;
 
 COPY header_checks /etc/postfix/header_checks

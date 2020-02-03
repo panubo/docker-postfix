@@ -38,6 +38,10 @@ These are common parameters to rate limit outbound mail:
 - `RELAYHOST_AUTH` - Enable authentication for relay host. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
 - `RELAYHOST_PASSWORDMAP` - relay host password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
 
+**Virtual alias map:**
+
+- `VIRTUAL_ALIASMAP` - virtual alias map in format: `VIRTUAL_ALIASMAP=alias@domain1.com:user@domain2.com,no-reply@somedomain.com:devnull`
+
 **Client authentication parameters:**
 
 Client authentication is used to authenticate relay clients. Client authentication can be used in conjunction with, or as an alternative to `MYNETWORKS`.
