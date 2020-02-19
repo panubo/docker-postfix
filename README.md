@@ -82,7 +82,7 @@ docker run --rm -t -i \
   -e MAILNAME=mail1.example.com \
   -e RELAYHOST_AUTH='yes' \
   -e RELAYHOST='[smtp.sendgrid.net]:587' \
-  -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587:apikey:<apikey goes here>" \
+  -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587,apikey,<apikey goes here>" \
   panubo/postfix:latest
 ```
 
