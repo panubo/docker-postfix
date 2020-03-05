@@ -1,5 +1,5 @@
 NAME := postfix
-TAG := latest
+TAG := buster
 IMAGE_NAME := panubo/$(NAME)
 
 .PHONY: help bash run run-dkim run-all-dkim build push clean

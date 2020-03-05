@@ -4,6 +4,21 @@ set -e
 
 [ "$DEBUG" == 'true' ] && set -x
 
+# Defaults
+: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
+: "${RELAYHOST:=}" # empty
+
+# TLS
+: "${USE_TLS:=yes}"
+: "${TLS_SECURITY_LEVEL:=may}"
+: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
+: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+: "${TLS_CA:=}"
+
+# General
+: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
+: "${INET_PROTOCOLS:=all}"
+
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
 unset LANG
 
@@ -19,10 +34,6 @@ else
   postfix set-permissions
 fi
 
-# Defaults
-: "${SIZELIMIT:=15728640}"  # 10Meg with headroom
-: "${RELAYHOST:=}" # empty
-
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
     # TODO s6-svwait for dkim
@@ -32,17 +43,6 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e smtpd_milters="inet:localhost:8891"
     postconf -e non_smtpd_milters="inet:localhost:8891"
 fi
-
-# TLS
-: "${USE_TLS:=yes}"
-: "${TLS_SECURITY_LEVEL:=may}"
-: "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
-: "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
-: "${TLS_CA:=}"
-
-# General
-: "${POSTFIX_ADD_MISSING_HEADERS:=no}"
-: "${INET_PROTOCOLS:=all}"
 
 echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
 postconf -e smtpd_use_tls="${USE_TLS}"
@@ -97,9 +97,18 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
     for P in "${PASSWORDMAP[@]}"; do
         IFS=':' read -ra MAP <<< "$P"
-        HOST=${MAP[0]}
-        USER=${MAP[1]}
-        PASS=${MAP[2]}
+        if [[ "${#MAP[@]}" -eq 3 ]]; then
+          HOST=${MAP[0]}
+          USER=${MAP[1]}
+          PASS=${MAP[2]}
+        elif [[ "${#MAP[@]}" -eq 4 ]]; then
+          HOST="${MAP[0]}:${MAP[1]}"
+          USER=${MAP[2]}
+          PASS=${MAP[3]}
+        else
+          echo "Bad password map"
+          exit 1
+        fi
         echo "postfix >> Adding user ${HOST} with user: ${USER}."
         echo "${HOST} ${USER}:${PASS}" >> /etc/postfix/sasl-passwords
     done
@@ -123,23 +132,52 @@ if [ -n "${BOUNCE_ADDRESS}" ]; then
   postconf -e bounce_notice_recipient="${BOUNCE_ADDRESS}"
 fi
 
-# exit cleanly
-trap "{ /usr/sbin/service postfix stop; }" EXIT
+# Common rate limiting
+if [ ! -z "${SMTP_DESTINATION_CONCURRENCY_LIMIT}" ]; then
+  echo "postfix >> Setting smtp_destination_concurrency_limit"
+  postconf -e smtp_destination_concurrency_limit="${SMTP_DESTINATION_CONCURRENCY_LIMIT}"
+fi
+
+if [ ! -z "${SMTP_DESTINATION_RATE_DELAY}" ]; then
+  echo "postfix >> Setting smtp_destination_rate_delay"
+  postconf -e smtp_destination_rate_delay="${SMTP_DESTINATION_RATE_DELAY}"
+fi
+
+if [ ! -z "${SMTP_EXTRA_RECIPIENT_LIMIT}" ]; then
+  echo "postfix >> Setting smtp_extra_recipient_limit"
+  postconf -e smtp_extra_recipient_limit="${SMTP_EXTRA_RECIPIENT_LIMIT}"
+fi
+
+# Client Authentication (SASL)
+if [ ! -z "${SMTPD_USERS}" ]; then
+  echo "postfix >> Setting smtpd sasl auth"
+  postconf -e smtpd_sasl_auth_enable="yes"
+  postconf -e broken_sasl_auth_clients="yes"
+  postconf -e smtpd_sasl_local_domain='$myhostname'
+  printf "%s\n" \
+    "pwcheck_method: auxprop" \
+    "auxprop_plugin: sasldb" \
+    "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM" \
+  > /etc/postfix/sasl/smtpd.conf
+  while IFS=':' read -r user password; do
+    echo "postfix >> Adding user SASL user: ${user}"
+    echo "${password}" | saslpasswd2 -p -c -u "${MAILNAME}" "${user}"
+  done < <(echo "${SMTPD_USERS}" | tr ',' '\n')
+  echo "smtp >> Info: \"saslpasswd2: error deleting entry from sasldb: BDB0073 DB_NOTFOUND: No matching key/data pair found\" can be ignored see https://github.com/cyrusimap/cyrus-sasl/issues/264"
+  chown postfix:sasl /etc/sasldb2
+  # /etc/sasldb2 needs to be in the postfix chroot, this is a bit of a hack
+  sed -i -E 's/etc\/host\.conf etc\/nsswitch\.conf etc\/nss_mdns\.config"/etc\/host.conf etc\/nsswitch.conf etc\/nss_mdns.config etc\/sasldb2"/' /usr/lib/postfix/configure-instance.sh
+fi
 
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
 
-# check postfix is happy
+# configure instance (populate etc)
+/usr/lib/postfix/configure-instance.sh
+
+# check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
 postfix check
 
-# start postfix
-/usr/sbin/service postfix start
-
-sleep 10 # wait for startup
-
-# watch for postfix exit
-MASTER_PID="$(cat /var/spool/postfix/pid/master.pid)"
-while kill -0 "${MASTER_PID}" 2>/dev/null; do
-  sleep 1
-done
+# start postfix in foreground
+exec /usr/sbin/postfix start-fg
