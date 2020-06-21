@@ -121,7 +121,7 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
           HOST=${MAP[0]}
           USER=${MAP[1]}
           PASS=${MAP[2]}
-        elif [[ "${#MP[@]}" -eq 4 ]]; then
+        elif [[ "${#MAP[@]}" -eq 4 ]]; then
           HOST="${MAP[0]}:${MAP[1]}"
           USER=${MAP[2]}
           PASS=${MAP[3]}
