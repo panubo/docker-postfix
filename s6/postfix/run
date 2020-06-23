@@ -91,6 +91,16 @@ if [ "${RELAYHOST_AUTH}" == "yes" ]; then
     postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
 fi
 
+if [ -n "${RELAYHOST_PASSWORDMAP_FILE}" ]; then
+  echo "postfix >> Reading password map file: ${RELAYHOST_PASSWORDMAP_FILE}"
+  if [ -e "${RELAYHOST_PASSWORDMAP_FILE}" ]; then
+    RELAYHOST_PASSWORDMAP=$(cat $RELAYHOST_PASSWORDMAP_FILE)
+    echo "postfix >> Read password map file"
+  else
+    echo "postfix >> Specified password map file not found!"
+  fi
+fi
+
 if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     echo "postfix >> Generating relayhost password map"
     truncate --size 0 /etc/postfix/sasl-passwords
@@ -149,6 +159,16 @@ if [ ! -z "${SMTP_EXTRA_RECIPIENT_LIMIT}" ]; then
 fi
 
 # Client Authentication (SASL)
+if [ -n "${SMTPD_USERS_FILE}" ]; then
+  echo "postfix >> Reading SMTPD users file: ${SMTPD_USERS_FILE}"
+  if [ -e "${SMTPD_USERS_FILE}" ]; then
+    SMTPD_USERS=$(cat $SMTPD_USERS_FILE)
+    echo "postfix >> Read SMTPD users file"
+  else
+    echo "postfix >> Specified SMTPD users file not found!"
+  fi
+fi
+
 if [ ! -z "${SMTPD_USERS}" ]; then
   echo "postfix >> Setting smtpd sasl auth"
   postconf -e smtpd_sasl_auth_enable="yes"
