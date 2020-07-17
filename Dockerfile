@@ -41,6 +41,7 @@ RUN set -x \
   && postconf -e smtpd_banner="\$myhostname ESMTP" \
   && postconf -Me submission/inet="submission inet n - y - - smtpd" \
   && postconf -Me 2525/inet="2525 inet n - y - - smtpd" \
+  && cp --remove-destination /usr/share/postfix/makedefs.out /etc/postfix/makedefs.out \
   && cp -a /var/spool/postfix /var/spool/postfix.cache \
   && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
   && rm -f /etc/opendkim.conf \
