@@ -91,6 +91,13 @@ if [ "${RELAYHOST_AUTH}" == "yes" ]; then
     postconf -e smtp_sasl_mechanism_filter="PLAIN LOGIN"
 fi
 
+if [ "${RELAYHOST_SMTPS}" == "yes" ]; then
+    echo "postfix >> Enabling SMTPS support"
+    postconf -e smtp_use_tls=yes
+    postconf -e smtp_tls_wrappermode=yes
+    postconf -e smtp_tls_security_level=encrypt
+fi
+
 if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     echo "postfix >> Generating relayhost password map"
     truncate --size 0 /etc/postfix/sasl-passwords
