@@ -37,6 +37,7 @@ These are common parameters to rate limit outbound mail:
 - `RELAYHOST` - Postfix relay host. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`). N.B. Use square brackets to prevent MX lookup on relay hostname.
 - `RELAYHOST_AUTH` - Enable authentication for relay host. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
 - `RELAYHOST_PASSWORDMAP` - relay host password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
+- `RELAYHOST_SMTPS`- Enable SMTPS support for the relay host. Enforces enabling of the required TLS settings.
 
 **Client authentication parameters:**
 
