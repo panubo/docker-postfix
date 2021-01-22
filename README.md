@@ -67,15 +67,17 @@ NB. A self-signed ("snake-oil") certificate will be generated on start if requir
 - `DKIM_SIGN_HEADERS` - Sets SignHeaders. Default unset.
 - `DKIM_OMIT_HEADERS` - Sets OmitHeaders. Default unset.
 
-**Arbitrary postfix parameters:**
+**Advanced Postfix parameters:**
 
-In some cases it might be needed to further customize some postfix paramters that are not explicitly exposed via environment variables. In this case the environment variable `POSTCONF` provides a hook that is directly passed to `postconf -e` after splitting it by `;`. Please note that this is different from existing usages of multi value options since the currently used comma is also often used in postfix parameters.
+In some cases it might be necessary to further customise Postfix parameters that are not explicitly exposed via environment variables. In this case the environment variable `POSTCONF` provides a hook that is directly passed to `postconf -e` after splitting it by `;`. N.B. this is different from existing usage of other multi-value options that use a comma.
 
-Simple example:
+Example usage:
+
 ```
 POSTCONF=masquerade_domains=foo.example.com example.com;masquerade_exceptions=root,mailer-daemon
 ```
-would result in `masquerade_domains` and `masquerade_exceptions` being configured for postfix.
+
+Would result in `masquerade_domains` and `masquerade_exceptions` being configured for Postfix.
 
 ## Custom Scripts
 
