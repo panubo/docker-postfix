@@ -14,6 +14,7 @@ RUN set -x \
 
 # Install packages
 RUN set -x \
+  && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps \
   && apt-get clean \
