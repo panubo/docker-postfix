@@ -51,6 +51,9 @@ Client authentication is used to authenticate relay clients. Client authenticati
 - `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''
+- `CLIENT_TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
+- `CLIENT_TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
+- `CLIENT_TLS_SECURITY_LEVEL` - Default `may` same as TLS_SECURITY_LEVEL but for client tls
 
 NB. A self-signed ("snake-oil") certificate will be generated on start if required.
 
