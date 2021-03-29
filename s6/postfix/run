@@ -14,6 +14,9 @@ set -e
 : "${TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
 : "${TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
 : "${TLS_CA:=}"
+: "${CLIENT_TLS_KEY:=/etc/ssl/private/ssl-cert-snakeoil.key}"
+: "${CLIENT_TLS_CRT:=/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+: "${CLIENT_TLS_SECURITY_LEVEL:=may}"
 
 # General
 : "${POSTFIX_ADD_MISSING_HEADERS:=no}"
@@ -63,6 +66,9 @@ if [ "${USE_TLS}" == "yes" ]; then
     postconf -e smtpd_tls_key_file="${TLS_KEY}"
     postconf -e smtpd_tls_cert_file="${TLS_CRT}"
     postconf -e smtpd_tls_CAfile="${TLS_CA}"
+    postconf -e smtp_tls_key_file="${CLIENT_TLS_KEY}"
+    postconf -e smtp_tls_cert_file="${CLIENT_TLS_CRT}"
+    postconf -e smtp_tls_security_level="${CLIENT_TLS_SECURITY_LEVEL}"
 fi
 
 # Configure Postfix General parameters
