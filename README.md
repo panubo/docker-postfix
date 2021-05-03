@@ -37,12 +37,14 @@ These are common parameters to rate limit outbound mail:
 - `RELAYHOST` - Postfix relay host. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`). N.B. Use square brackets to prevent MX lookup on relay hostname.
 - `RELAYHOST_AUTH` - Enable authentication for relay host. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
 - `RELAYHOST_PASSWORDMAP` - relay host password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
+- `RELAYHOST_PASSWORDMAP_FILE` - relayhost password map file, content is copied into RELAYHOST_PASSWORDMAP. Useful in combination with docker secrets.
 
 **Client authentication parameters:**
 
 Client authentication is used to authenticate relay clients. Client authentication can be used in conjunction with, or as an alternative to `MYNETWORKS`.
 
 - `SMTPD_USERS` - SMTPD Users `user1:password1,user2:password2`
+- `SMTPD_USERS_FILE` - SMTPD Users in a file, content is copied into SMTPD_USERS. Useful in combination with docker secrets.
 
 **TLS parameters:**
 
