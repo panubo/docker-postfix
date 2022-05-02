@@ -36,7 +36,9 @@ These are common parameters to rate limit outbound mail:
 
 - `RELAYHOST` - Postfix relay host. Default ''. (example `mail.example.com:25`, or `[email-smtp.us-west-2.amazonaws.com]:587`). N.B. Use square brackets to prevent MX lookup on relay hostname.
 - `RELAYHOST_AUTH` - Enable authentication for relay host. Generally used with `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
-- `RELAYHOST_PASSWORDMAP` - relay host password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass2,mail2.example.com:user2:pass2`.
+- `RELAYHOST_PASSWORDMAP` - Relay host password map in format: `RELAYHOST_PASSWORDMAP=[mail1.example.com]:587:user1:pass1,mail2.example.com:user2:pass2,user3:pass3`.
+- `RELAYHOST_MAP` - Sender dependent relayhost map in format: `RELAYHOST_MAP=@domain1.com:smtp.example.com:587,@domain2.com:[smtp.example.com]:587`
+- `SENDER_DEPENDENT_RELAYHOST_AUTH` - Enable sender dependent authentication for relay host. Generally used with `RELAYHOST_MAP` and `RELAYHOST_PASSWORDMAP`. Default `no`. (options, `yes`, `no`).
 
 **Client authentication parameters:**
 
@@ -51,6 +53,10 @@ Client authentication is used to authenticate relay clients. Client authenticati
 - `TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
 - `TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 - `TLS_CA` - Default ''
+
+- `CLIENT_TLS_SECURITY_LEVEL` - Default `may` same as TLS_SECURITY_LEVEL but for client tls
+- `CLIENT_TLS_KEY` - Default `/etc/ssl/private/ssl-cert-snakeoil.key`
+- `CLIENT_TLS_CRT` - Default `/etc/ssl/certs/ssl-cert-snakeoil.pem`
 
 NB. A self-signed ("snake-oil") certificate will be generated on start if required.
 
