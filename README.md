@@ -23,6 +23,7 @@ email access.
 - `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`. (options, `ipv4`, `ipv6`, `all`)
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If `true` activates a set of pre-configured header_checks. (options, `true`, `false`)
+- `DISABLE_VRFY_COMMAND` - Prevents some email address harvesting techniques. Default `no`. (options, `yes`, `no`)
 
 **Rate limiting parameters:**
 
