@@ -21,7 +21,7 @@ set -e
 # General
 : "${POSTFIX_ADD_MISSING_HEADERS:=no}"
 : "${INET_PROTOCOLS:=all}"
-: "${DISABLE_VRFY_COMMAND:=no}"
+: "${DISABLE_VRFY_COMMAND:=yes}"
 
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
 unset LANG
