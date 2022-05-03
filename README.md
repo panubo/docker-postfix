@@ -1,6 +1,6 @@
 # Postfix Docker Image
 
-Postfix SMTP Relay based on Debian Buster.
+Postfix SMTP Relay based on Debian Bullseye.
 
 Highly configurable Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM

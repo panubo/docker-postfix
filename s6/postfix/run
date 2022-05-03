@@ -121,11 +121,7 @@ if [ -n "${RELAYHOST_PASSWORDMAP}" ]; then
     IFS=',' read -r -a PASSWORDMAP <<< "${RELAYHOST_PASSWORDMAP}"
     for P in "${PASSWORDMAP[@]}"; do
         IFS=':' read -ra MAP <<< "$P"
-        if [[ "${#MAP[@]}" -eq 2 ]]; then
-          HOST=${MAP[0]}
-          USER=${MAP[0]}
-          PASS=${MAP[1]}
-        elif [[ "${#MAP[@]}" -eq 3 ]]; then
+        if [[ "${#MAP[@]}" -eq 3 ]]; then
           HOST=${MAP[0]}
           USER=${MAP[1]}
           PASS=${MAP[2]}
