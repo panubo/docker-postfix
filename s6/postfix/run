@@ -21,6 +21,7 @@ set -e
 # General
 : "${POSTFIX_ADD_MISSING_HEADERS:=no}"
 : "${INET_PROTOCOLS:=all}"
+: "${DISABLE_VRFY_COMMAND:=yes}"
 
 # Fix issue with dpkg-reconfigure and locales not installed "perl: warning: Setting locale failed."
 unset LANG
@@ -164,6 +165,9 @@ postconf -e always_add_missing_headers="${POSTFIX_ADD_MISSING_HEADERS}"
 
 echo "postfix >> Setting inet_protocols to ${INET_PROTOCOLS}"
 postconf -e inet_protocols="${INET_PROTOCOLS}"
+
+echo "postfix >> Setting disable_vrfy_command to ${DISABLE_VRFY_COMMAND}"
+postconf -e disable_vrfy_command="${DISABLE_VRFY_COMMAND}"
 
 if [[ "${HEADER_CHECKS}" == "true" ]]; then
   echo "postfix >> Setting header_checks"
