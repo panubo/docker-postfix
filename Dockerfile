@@ -16,7 +16,7 @@ RUN set -x \
 RUN set -x \
   && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
-  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps \
+  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps net-tools \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   ;
