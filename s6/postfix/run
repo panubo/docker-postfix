@@ -52,7 +52,7 @@ echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
 postconf -e smtpd_use_tls="${USE_TLS}"
 
 if [ "${USE_TLS}" == "yes" ]; then
-    if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
+    if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ] || [ "${CLIENT_TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
         echo "postfix >> Generating snakeoil SSL cert"
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
