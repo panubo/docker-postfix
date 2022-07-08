@@ -2,7 +2,7 @@ NAME := postfix
 TAG := latest
 IMAGE_NAME := panubo/$(NAME)
 
-.PHONY: help bash run run-dkim run-all-dkim build push clean
+.PHONY: *
 
 help:
 	@printf "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)\n"
@@ -16,6 +16,13 @@ run: ## Runs the docker image in a test mode
 	@echo "Running ${ID} @ smtp://${IP}"
 	@docker attach ${ID}
 	@docker kill ${ID}
+
+run-tls: ## Runs the docker image in a test mode with TLS
+		$(eval ID := $(shell docker run -d --name postfix --hostname mail.example.com -e RELAYHOST=172.17.0.2 -e MAILNAME=mail.example.com -e USE_TLS=yes $(IMAGE_NAME):latest))
+		$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
+		@echo "Running ${ID} @ smtp://${IP}"
+		@docker attach ${ID}
+		@docker kill ${ID}
 
 run-dkim: ## Runs the docker image in a test mode with DKIM
 	$(eval ID := $(shell docker run -d --name postfix --hostname mail.example.com -e RELAYHOST=172.17.0.2 -e MAILNAME=mail.example.com -e DKIM_DOMAINS=foo.example.com,bar.example.com,example.net -e USE_DKIM=yes -v `pwd`/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):latest))
