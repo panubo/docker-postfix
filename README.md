@@ -9,6 +9,8 @@ requires SMTP sending capabilities. Supports TLS out of the box and DKIM
 Not intended to be used for receiving email for local delivery or end-user
 email access.
 
+This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `public.ecr.aws/panubo/postfix`.
+
 ## Environment Variables
 
 - `MAILNAME` - set this to a legitimate FQDN hostname for this service (required). (example, `mail.example.com`)
@@ -95,7 +97,7 @@ Executable shell scripts and binaries can be mounted or copied in to `/etc/entry
 
 Simple example:
 
-`docker run -e MAILNAME=mail.example.com panubo/postfix:latest`
+`docker run -e MAILNAME=mail.example.com quay.io/panubo/postfix:latest`
 
 Usage with SendGrid:
 
@@ -107,7 +109,7 @@ docker run --rm -t -i \
   -e RELAYHOST_AUTH='yes' \
   -e RELAYHOST='[smtp.sendgrid.net]:587' \
   -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587:apikey:<apikey goes here>" \
-  panubo/postfix:latest
+  quay.io/panubo/postfix:latest
 ```
 
 ## Volumes
