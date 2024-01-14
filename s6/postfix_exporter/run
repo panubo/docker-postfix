@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -e
+
+[ "$DEBUG" == 'true' ] && set -x
+
+# Defaults
+: "${LOGOUTPUT:=/dev/stdout}"
+
+if [[ "${POSTFIX_EXPORTER_ENABLED}" == "true" ]] && [[ "${LOGOUTPUT}" != "/dev/stdout" ]]; then
+  echo "postfix_exporter >> FATAL exporter is enabled but requires LOGOUTPUT is set to /dev/stdout"
+  s6-svscanctl -t /etc/s6
+  exit 1
+elif [[ "${POSTFIX_EXPORTER_ENABLED}" == "true" ]]; then
+  s6-svwait -u /etc/s6/postfix/log
+  echo "postfix_exporter >> Starting postfix_exporter"
+  exec s6-setuidgid postfix postfix_exporter --postfix.logfile_path=/var/log/s6-maillog/current
+fi
+
+echo "postfix_exporter >> POSTFIX_EXPORTER_ENABLED not \"true\", not starting postfix_exporter"
+
+s6-svc -d "$(pwd)"
+exit

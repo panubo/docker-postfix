@@ -1,6 +1,23 @@
+FROM golang:1.16 as postfix_exporter
+
+ENV \
+  POSTFIX_EXPORTER_VERSION=0.3.0 \
+  POSTFIX_EXPORTER_CHECKSUM=a0d45f3615d6f24b5532d4048fbb08a248588cac7587279aef1473b6e50b6157
+
+RUN set -x \
+  && wget "https://github.com/kumina/postfix_exporter/archive/refs/tags/${POSTFIX_EXPORTER_VERSION}.tar.gz" \
+  && echo "${POSTFIX_EXPORTER_CHECKSUM}  ${POSTFIX_EXPORTER_VERSION}.tar.gz" > SHA256SUM \
+  && ( sha256sum -c SHA256SUM || ( echo "Expected ${POSTFIX_EXPORTER_VERSION}.tar.gz: $(sha256sum ${POSTFIX_EXPORTER_VERSION}.tar.gz)"; exit 1; )) \
+  && tar -zxf ${POSTFIX_EXPORTER_VERSION}.tar.gz \
+  && cd postfix_exporter-${POSTFIX_EXPORTER_VERSION} \
+  && go mod download \
+  && go install -tags nosystemd,nodocker \
+  ;
+
 # Postfix SMTP Relay
 
-FROM debian:bullseye
+# Debian Bookworm
+FROM debian:12
 
 EXPOSE 25 587 2525
 
@@ -16,37 +33,9 @@ RUN set -x \
 RUN set -x \
   && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
-  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps \
+  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps s6 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  ;
-
-# Install s6
-RUN set -x \
-  && S6_VERSION=2.11.0.0 \
-  && EXECLINE_VERSION=2.8.1.0 \
-  && SKAWARE_RELEASE=2.0.7 \
-  && S6_CHECKSUM_X86_64=fcf79204c1957016fc88b0ad7d98f150071483583552103d5822cbf56824cc87 \
-  && S6_CHECKSUM_AARCH64=64151e136f887c6c2c7df69e3100573c318ec7400296680cc698bc7b0ca36943 \
-  && EXECLINE_CHECKSUM_X86_64=b216cfc4db928729d950df5a354aa34bc529e8250b55ab0de700193693dea682 \
-  && EXECLINE_CHECKSUM_AARCH64=8cb1d5c2d44cb94990d63023db48f7d3cd71ead10cbb19c05b99dbd528af5748 \
-  && if [ "$(uname -m)" = "x86_64" ] ; then \
-        S6_CHECKSUM="${S6_CHECKSUM_X86_64}"; \
-        EXECLINE_CHECKSUM="${EXECLINE_CHECKSUM_X86_64}"; \
-        SKAWARE_ARCH="amd64"; \
-      elif [ "$(uname -m)" = "aarch64" ]; then \
-        S6_CHECKSUM="${S6_CHECKSUM_AARCH64}"; \
-        EXECLINE_CHECKSUM="${EXECLINE_CHECKSUM_AARCH64}"; \
-        SKAWARE_ARCH="aarch64"; \
-      fi \
-  && curl -sSf -L -o /tmp/s6-${S6_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz https://github.com/just-containers/skaware/releases/download/v${SKAWARE_RELEASE}/s6-${S6_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz \
-  && curl -sSf -L -o /tmp/execline-${EXECLINE_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz https://github.com/just-containers/skaware/releases/download/v${SKAWARE_RELEASE}/execline-${EXECLINE_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz \
-  && echo "${S6_CHECKSUM}  s6-${S6_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz" > /tmp/SHA256SUM \
-  && echo "${EXECLINE_CHECKSUM}  execline-${EXECLINE_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz" >> /tmp/SHA256SUM \
-  && ( cd /tmp; sha256sum -c SHA256SUM || ( echo "Expected S6: $(sha256sum s6-${S6_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz) Execline: $(sha256sum execline-${EXECLINE_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz)"; exit 1; )) \
-  && tar -C /usr -zxf /tmp/s6-${S6_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz \
-  && tar -C /usr -zxf /tmp/execline-${EXECLINE_VERSION}-linux-${SKAWARE_ARCH}-bin.tar.gz \
-  && rm -rf /tmp/* \
   ;
 
 # Configure Postfix / dkim
@@ -63,9 +52,13 @@ RUN set -x \
 
 COPY header_checks /etc/postfix/header_checks
 COPY opendkim.conf.sh /etc/
-
+COPY --from=postfix_exporter /go/bin/postfix_exporter /usr/local/bin/postfix_exporter
 COPY s6 /etc/s6/
 COPY entry.sh /
+
+RUN set -x \
+  && chmod 0644 /etc/postfix/header_checks \
+  ;
 
 ENTRYPOINT ["/entry.sh"]
 CMD ["/usr/bin/s6-svscan", "/etc/s6"]

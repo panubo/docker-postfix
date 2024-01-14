@@ -4,9 +4,6 @@ set -e
 
 [ "$DEBUG" == 'true' ] && set -x
 
-# Defaults
-: "${LOGOUTPUT:=/dev/stdout}"
+echo "syslogd >> Setting syslogd output to /dev/stdout (Only used for OpenDKIM)"
 
-echo "syslogd >> Setting syslogd output to ${LOGOUTPUT}"
-
-exec syslogd -n -O "${LOGOUTPUT}" -S
+exec syslogd -n -O "/dev/stdout" -S
