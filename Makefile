@@ -16,6 +16,7 @@ run: ## Runs the docker image in a test mode
 		-e MAILNAME=mail.example.com \
 		-e SIZELIMIT=20480000 \
 		-e LOGOUTPUT=/var/log/maillog \
+		-e CONFIG_RELOADER_ENABLED=true \
 		-e POSTFIX_EXPORTER_ENABLED=false $(IMAGE_NAME):$(TAG)))
 	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
 	@echo "Running ${ID} @ smtp://${IP}"
@@ -26,6 +27,7 @@ run-dkim: dkim.key ## Runs the docker image in a test mode with DKIM
 	$(eval ID := $(shell docker rm -f $(NAME) >/dev/null 2>&1; docker run -d --name $(NAME) --hostname mail.example.com \
 		-e RELAYHOST=172.17.0.2 \
 		-e MAILNAME=mail.example.com \
+		-e CONFIG_RELOADER_ENABLED=true \
 		-e USE_DKIM=yes -v `pwd`/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):$(TAG)))
 	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
 	@echo "Running ${ID} @ smtp://${IP}"
