@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+mkdir /var/log/s6-maillog
+chown postfix:postfix /var/log/s6-maillog
+
+exec s6-setuidgid postfix s6-log -bp 1 n3 s10000000 /var/log/s6-maillog

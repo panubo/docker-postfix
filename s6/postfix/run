@@ -7,6 +7,7 @@ set -e
 # Defaults
 : "${SIZELIMIT:=15728640}"  # 10Meg with headroom
 : "${RELAYHOST:=}" # empty
+: "${LOGOUTPUT:=/dev/stdout}"
 
 # TLS
 : "${USE_TLS:=yes}"
@@ -219,6 +220,10 @@ if [ ! -z "${SMTPD_USERS}" ]; then
   sed -i -E 's/etc\/host\.conf etc\/nsswitch\.conf etc\/nss_mdns\.config"/etc\/host.conf etc\/nsswitch.conf etc\/nss_mdns.config etc\/sasldb2"/' /usr/lib/postfix/configure-instance.sh
 fi
 
+# Configure logging
+echo "postfix >> Setting maillog_file to ${LOGOUTPUT}"
+postconf -e maillog_file="${LOGOUTPUT}"
+
 # Configure advanced settings
 if [ -n "${POSTCONF}" ]; then
   echo "postfix >> Configuring additional postfix parameters"
@@ -226,7 +231,7 @@ if [ -n "${POSTCONF}" ]; then
   IFS=';' read -ra CONFIG <<< "${POSTCONF}"
   for C in "${CONFIG[@]}"; do
       IFS='=' read -ra MAP <<< "$C"
-      echo "postfix >> Setting parameter ${MAP[0]}"
+      echo "postfix >> Setting parameter ${MAP[0]} to ${MAP[1]}"
       postconf -e "$C"
   done
 fi
@@ -241,5 +246,5 @@ rm -f /var/spool/postfix/pid/*
 echo "postfix >> Checking Postfix Configuration"
 postfix check
 
-# start postfix in foreground
+echo "postfix >> Starting postfix"
 exec /usr/sbin/postfix start-fg

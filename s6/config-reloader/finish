@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+: "${CONFIG_RELOADER_ENABLED:=false}"
+
+if [[ "${CONFIG_RELOADER_ENABLED}" == "true" ]]; then
+  # Shutdown everything and exit the process crashes or is stopped.
+  s6-svscanctl -t /etc/s6
+fi

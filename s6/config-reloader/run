@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# This script watches the known TLS cert and keys for changes (`mv` or updated Kubernetes secret) then reloads postfix.
+
+: "${CONFIG_RELOADER_ENABLED:=false}"
+
+if [[ "${CONFIG_RELOADER_ENABLED}" != "true" ]]; then
+  echo "config-reloader >> Config reloader is not being started"
+  s6-svc -d "$(pwd)"
+  exit
+fi
+
+watch_files=( 
+  "${TLS_CRT:-/etc/ssl/certs/ssl-cert-snakeoil.pem}" 
+  "${TLS_KEY:-/etc/ssl/private/ssl-cert-snakeoil.key}" 
+  "${CLIENT_TLS_KEY:-/etc/ssl/certs/ssl-cert-snakeoil.pem}" 
+  "${CLIENT_TLS_CRT:-/etc/ssl/private/ssl-cert-snakeoil.key}" 
+)
+
+# Start infinite loop
+while true; do
+  postfix reload
+  echo "config-reloader >> Waiting on config changes..."
+  # delete_self is the event that triggers when the link is removed and replaced.
+  inotifywait --event delete_self "${watch_files[@]}"
+  # sleep to prevent race condition
+  sleep 3
+done

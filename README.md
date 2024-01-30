@@ -15,8 +15,9 @@ This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `
 
 - `MAILNAME` - set this to a legitimate FQDN hostname for this service (required). (example, `mail.example.com`)
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay. Default `127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`
-- `LOGOUTPUT` - Syslog log file location. eg `/var/log/maillog`. Default `/dev/stdout`.
+- `LOGOUTPUT` - Log file location. eg `/var/log/maillog`. Default `/dev/stdout`. See [Logging](#logging)
 - `TZ` - set timezone. This is used by Postfix to create `Received` headers. Default `UTC`.
+- `POSTFIX_EXPORTER_ENABLED` - enable the Prometheus postfix_exporter. Default `false`. See [Postfix Exporter](#postfix-prometheus-exporter)
 
 **General Postfix:**
 
@@ -88,6 +89,32 @@ POSTCONF=masquerade_domains=foo.example.com example.com;masquerade_exceptions=ro
 ```
 
 Would result in `masquerade_domains` and `masquerade_exceptions` being configured for Postfix.
+
+**Config Reloader**
+
+The config reloader watches the known TLS cert and keys (`TLS_CRT`, `TLS_KEY` etc) for changes (`mv` or updated Kubernetes secret) then reloads Postfix.
+
+- `CONFIG_RELOADER_ENABLED` - Enable the config reloader. Default `false`, must be set to `true` to enable.
+
+## Postfix Prometheus Exporter
+
+This image comes with [kumina/postfix_exporter](https://github.com/kumina/postfix_exporter) pre-installed. To enable set the environment variable `POSTFIX_EXPORTER_ENABLED=true` (this must be exactly "true"). The exporter requires that the logoutput is `/dev/stdout` it can't be anything else.
+
+The exporter listens on port `9154/tcp`.
+
+See [Logging](#logging)
+
+## Logging
+
+This container outputs the Postfix mail log to stdout by default, additionally logs are saved to `/var/log/s6-maillog/current` which is rotated every 10MB with only 3 log files retained.
+
+If you want to output somewhere else you can set environment variable `LOGOUTPUT`. For example `LOGOUTPUT=/var/log/maillog`.
+
+When enabled OpenDKIM only supports syslog output, the syslogd daemon is only used for OpenDKIM. Only /dev/stdout is supported for OpenDKIM syslog logs.
+
+_Note: the Postfix Prometheus exporter only works when the logs are left at /dev/stdout. This requirement of logs going to /dev/stdout is due to the containers logging structure. This may be improved but was needed to keep with backwards compatibility without adding additional variables to configured_
+
+_Note: The log `/var/log/s6-maillog/current` is always created but won't actually contain any logs if `LOGOUTPUT` is not `/dev/stdout`._
 
 ## Custom Scripts
 
