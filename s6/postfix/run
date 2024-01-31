@@ -30,10 +30,12 @@ unset LANG
 cd /etc/postfix
 
 # Copy default spool from cache
+# Note: this test may get confused if a volume is mounted that already contains unrelated directories (eg lost+found)
 if [ ! "$(ls -A /var/spool/postfix)" ]; then
-   cp -a /var/spool/postfix.cache/* /var/spool/postfix/
+  echo "postfix >> Copying postfix spool directory from postfix.cache (from the image)"
+  cp -a /var/spool/postfix.cache/* /var/spool/postfix/
 else
-  # Fix spool directory permissions
+  echo "postfix >> Fixing/resetting spool directory permissions"
   chgrp -R postdrop /var/spool/postfix/public
   chgrp -R postdrop /var/spool/postfix/maildrop
   postfix set-permissions

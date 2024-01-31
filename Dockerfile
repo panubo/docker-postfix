@@ -40,6 +40,7 @@ RUN set -x \
 
 # Configure Postfix / dkim
 RUN set -x \
+  && postconf -e myhostname="localhost" \
   && postconf -e smtpd_banner="\$myhostname ESMTP" \
   && postconf -Me submission/inet="submission inet n - y - - smtpd" \
   && postconf -Me 2525/inet="2525 inet n - y - - smtpd" \
