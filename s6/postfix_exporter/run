@@ -14,6 +14,10 @@ if [[ "${POSTFIX_EXPORTER_ENABLED}" == "true" ]] && [[ "${LOGOUTPUT}" != "/dev/s
 elif [[ "${POSTFIX_EXPORTER_ENABLED}" == "true" ]]; then
   s6-svwait -u /etc/s6/postfix/log
   echo "postfix_exporter >> Starting postfix_exporter"
+  while [ ! -f /var/log/s6-maillog/current ]; do
+    echo "postfix_exporter >> waiting for /var/log/s6-maillog/current to be created"
+    sleep 1
+  done
   exec s6-setuidgid postfix postfix_exporter --postfix.logfile_path=/var/log/s6-maillog/current
 fi
 
