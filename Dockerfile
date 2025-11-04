@@ -16,8 +16,8 @@ RUN set -x \
 
 # Postfix SMTP Relay
 
-# Debian Bookworm
-FROM debian:12
+# Debian Trixie
+FROM debian:13
 
 EXPOSE 25 587 2525
 
@@ -33,7 +33,7 @@ RUN set -x \
 RUN set -x \
   && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
-  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ca-certificates procps s6 inotify-tools \
+  && apt-get install -y --no-install-recommends postfix mailutils busybox-syslogd opendkim opendkim-tools libsasl2-modules sasl2-bin curl ssl-cert ca-certificates procps s6 inotify-tools \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   ;
@@ -45,7 +45,6 @@ RUN set -x \
   && postconf -Me submission/inet="submission inet n - y - - smtpd" \
   && postconf -Me 2525/inet="2525 inet n - y - - smtpd" \
   && cp --remove-destination /usr/share/postfix/makedefs.out /etc/postfix/makedefs.out \
-  && cp -a /var/spool/postfix /var/spool/postfix.cache \
   && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
   && sed -i -E '/^smtpd_tls_cert_file|^smtpd_tls_key_file/d' /etc/postfix/main.cf \
   && rm -f /etc/opendkim.conf \

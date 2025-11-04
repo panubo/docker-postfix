@@ -29,17 +29,8 @@ unset LANG
 
 cd /etc/postfix
 
-# Copy default spool from cache
-# Note: this test may get confused if a volume is mounted that already contains unrelated directories (eg lost+found)
-if [ ! "$(ls -A /var/spool/postfix)" ]; then
-  echo "postfix >> Copying postfix spool directory from postfix.cache (from the image)"
-  cp -a /var/spool/postfix.cache/* /var/spool/postfix/
-else
-  echo "postfix >> Fixing/resetting spool directory permissions"
-  chgrp -R postdrop /var/spool/postfix/public
-  chgrp -R postdrop /var/spool/postfix/maildrop
-  postfix set-permissions
-fi
+echo "postfix >> Fixing/resetting spool directory permissions"
+postfix set-permissions
 
 # DKIM
 if [ "${USE_DKIM}" == "yes" ]; then
@@ -51,16 +42,12 @@ if [ "${USE_DKIM}" == "yes" ]; then
     postconf -e non_smtpd_milters="inet:localhost:8891"
 fi
 
-echo "postfix >> Setting smtpd_use_tls to ${USE_TLS}"
-postconf -e smtpd_use_tls="${USE_TLS}"
-
 if [ "${USE_TLS}" == "yes" ]; then
     if [ "${TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ] || [ "${CLIENT_TLS_KEY}" == "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
         echo "postfix >> Generating snakeoil SSL cert"
         dpkg-reconfigure -f noninteractive ssl-cert
     fi
     echo "postfix >> Setting smtp_tls parameters"
-    # setting smtpd_tls_security_level implies smtp_use_tls="yes"
     postconf -e smtp_tls_security_level="${CLIENT_TLS_SECURITY_LEVEL}"
     postconf -e smtp_tls_key_file="${CLIENT_TLS_KEY}"
     postconf -e smtp_tls_cert_file="${CLIENT_TLS_CRT}"
@@ -68,7 +55,6 @@ if [ "${USE_TLS}" == "yes" ]; then
     postconf -e smtp_tls_CApath="/etc/ssl/certs"
     postconf -e smtp_tls_loglevel="1"
     echo "postfix >> Setting smtpd_tls parameters"
-    # setting smtpd_tls_security_level implies smtpd_use_tls="yes"
     postconf -e smtpd_tls_security_level="${TLS_SECURITY_LEVEL}"
     postconf -e smtpd_tls_key_file="${TLS_KEY}"
     postconf -e smtpd_tls_cert_file="${TLS_CRT}"
@@ -243,9 +229,6 @@ fi
 
 # Cleanup stale pids incase we hadn't exited cleanly
 rm -f /var/spool/postfix/pid/*
-
-# configure instance (populate etc)
-/usr/lib/postfix/configure-instance.sh
 
 # check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
