@@ -74,6 +74,9 @@ if [ "${USE_TLS}" == "yes" ]; then
     postconf -e smtpd_tls_cert_file="${TLS_CRT}"
     postconf -e smtpd_tls_CAfile="${TLS_CA}"
     postconf -e smtpd_tls_CApath="/etc/ssl/certs"
+else
+    postconf -e smtpd_tls_security_level="none"
+    postconf -e smtp_tls_security_level="none"
 fi
 
 # Configure Postfix General parameters
