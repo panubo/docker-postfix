@@ -47,6 +47,7 @@ RUN set -x \
   && cp --remove-destination /usr/share/postfix/makedefs.out /etc/postfix/makedefs.out \
   && cp -a /var/spool/postfix /var/spool/postfix.cache \
   && rm -f /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem \
+  && sed -i -E '/^smtpd_tls_cert_file|^smtpd_tls_key_file/d' /etc/postfix/main.cf \
   && rm -f /etc/opendkim.conf \
   && mkdir /etc/opendkim/ \
   ;
