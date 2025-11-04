@@ -4,18 +4,25 @@
 
 : "${CONFIG_RELOADER_ENABLED:=false}"
 
+watch_files=(
+  "${TLS_CRT:-/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+  "${TLS_KEY:-/etc/ssl/private/ssl-cert-snakeoil.key}"
+  "${CLIENT_TLS_KEY:-/etc/ssl/certs/ssl-cert-snakeoil.pem}"
+  "${CLIENT_TLS_CRT:-/etc/ssl/private/ssl-cert-snakeoil.key}"
+)
+
 if [[ "${CONFIG_RELOADER_ENABLED}" != "true" ]]; then
   echo "config-reloader >> Config reloader is not being started"
   s6-svc -d "$(pwd)"
   exit
+else
+  for file in "${watch_files[@]}"; do
+    while [ ! -f "$file" ]; do
+      echo "config-reloader >> Waiting for file to be created: $file"
+      sleep 1
+    done
+  done
 fi
-
-watch_files=( 
-  "${TLS_CRT:-/etc/ssl/certs/ssl-cert-snakeoil.pem}" 
-  "${TLS_KEY:-/etc/ssl/private/ssl-cert-snakeoil.key}" 
-  "${CLIENT_TLS_KEY:-/etc/ssl/certs/ssl-cert-snakeoil.pem}" 
-  "${CLIENT_TLS_CRT:-/etc/ssl/private/ssl-cert-snakeoil.key}" 
-)
 
 # Start infinite loop
 while true; do
