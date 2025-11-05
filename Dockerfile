@@ -1,4 +1,4 @@
-FROM golang:1.16 as postfix_exporter
+FROM golang:1.16 AS postfix_exporter
 
 ENV \
   POSTFIX_EXPORTER_VERSION=0.3.0 \
