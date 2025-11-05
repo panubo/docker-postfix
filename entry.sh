@@ -3,6 +3,8 @@
 set -e
 [ "${DEBUG:-false}" == 'true' ] && set -x
 
+echo "smtp >> Starting..."
+
 # Defaults
 if [ -z "$MAILNAME" ]; then
     echo "smtp >> Error: MAILNAME not specified"
