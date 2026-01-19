@@ -25,9 +25,13 @@ if [ ! -f "${DKIM_KEYFILE}" ]; then
     s6-svscanctl -t /etc/s6
     exit 128
 else
-    echo "dkim >> Setting mode and owner on $DKIM_KEYFILE"
-    chown root:root ${DKIM_KEYFILE}
-    chmod 400 ${DKIM_KEYFILE}
+    echo "dkim >> Checking mode and owner on $DKIM_KEYFILE"
+    if [ "$(stat -c "%U:%G" "${DKIM_KEYFILE}")" != "root:root" ]; then
+        chown root:root "${DKIM_KEYFILE}" || { echo "dkim >> Warning: could not set owner on DKIM_KEYFILE"; }
+    fi
+    if [ "$(stat -c "%a" "${DKIM_KEYFILE}")" != "400" ]; then
+        chmod 400 "${DKIM_KEYFILE}" || { echo "dkim >> Warning: could not set mode on DKIM_KEYFILE"; }
+    fi
 fi
 
 # Status Output
