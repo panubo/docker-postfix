@@ -2,10 +2,10 @@
 
 set -e
 
-OUTPUT='/etc/opendkim.conf'
+: ${DKIM_CONF:='/etc/opendkim.conf'}
 
 # exit if config already exists
-[ -f "${OUTPUT}" ] && exit 0
+[ -f "${DKIM_CONF}" ] && exit 0
 
 # defaults
 : ${DKIM_KEYFILE:='/etc/opendkim/dkim.key'}
@@ -40,7 +40,7 @@ echo "dkim >> Setting DKIM_DOMAINS to $DKIM_DOMAINS"
 echo "dkim >> Setting DKIM_SELECTOR to $DKIM_SELECTOR"
 
 # Render the dkim config
-cat > ${OUTPUT} <<EOF
+cat > "${DKIM_CONF}" <<EOF
 # This is a basic configuration that can easily be adapted to suit a standard
 # installation. For more advanced options, see opendkim.conf(5) and/or
 # /usr/share/doc/opendkim/examples/opendkim.conf.sample.
