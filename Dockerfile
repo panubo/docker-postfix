@@ -51,10 +51,10 @@ RUN set -x \
   && mkdir /etc/opendkim/ \
   ;
 
-COPY header_checks /etc/postfix/header_checks
-COPY opendkim.conf.sh /etc/
+COPY etc/header_checks /etc/postfix/header_checks
+COPY etc/opendkim.conf.sh /etc/
 COPY --from=postfix_exporter /go/bin/postfix_exporter /usr/local/bin/postfix_exporter
-COPY s6 /etc/s6/
+COPY etc/s6 /etc/s6/
 COPY entry.sh /
 
 RUN set -x \
