@@ -199,6 +199,9 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 
 See the `Makefile` for make targets.
 
+To run the BATS tests, use the `make test` command. This will build a test Docker image and execute the tests within it.
+
+
 ## Releases
 
 For production usage, please use a versioned release rather than the floating 'latest' tag.
