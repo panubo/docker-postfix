@@ -2,7 +2,7 @@ NAME := postfix
 TAG := latest
 IMAGE_NAME := panubo/$(NAME)
 
-.PHONY: help bash run run-* build push clean _ci_test
+.PHONY: help bash run run-* build push clean test _ci_test
 
 help:
 	@printf "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)\n"
@@ -55,7 +55,11 @@ push: ## Pushes the docker image to hub.docker.com
 clean: ## Remove built image
 	docker rmi $(IMAGE_NAME):$(TAG)
 
-_ci_test:
+test: ## Build a test image and run bats tests in docker
+	docker build --target development -t $(IMAGE_NAME):test-dev .
+	docker run --rm -v $(shell pwd):/app -w /app $(IMAGE_NAME):test-dev bats test/
+
+_ci_test: test
 	true
 
 dkim.key:

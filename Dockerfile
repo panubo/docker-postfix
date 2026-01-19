@@ -14,10 +14,8 @@ RUN set -x \
   && go install -tags nosystemd,nodocker \
   ;
 
-# Postfix SMTP Relay
-
 # Debian Trixie
-FROM debian:13
+FROM debian:13 AS base
 
 EXPOSE 25 587 2525
 
@@ -61,5 +59,19 @@ RUN set -x \
   && chmod 0644 /etc/postfix/header_checks \
   ;
 
+# Development image
+FROM base AS development
+
+# Install packages
+RUN set -x \
+&& export DEBIAN_FRONTEND=noninteractive \
+&& apt-get update \
+&& apt-get install -y --no-install-recommends bats \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* \
+;
+
+# Postfix SMTP Relay
+FROM base AS build
 ENTRYPOINT ["/entry.sh"]
 CMD ["/usr/bin/s6-svscan", "/etc/s6"]

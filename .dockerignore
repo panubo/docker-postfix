@@ -1,2 +1,5 @@
 .git
 dkim.key
+Dockerfile*
+test/
+Makefile
