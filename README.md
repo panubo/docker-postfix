@@ -1,5 +1,9 @@
 # Postfix Docker Image
 
+![build-push](https://github.com/panubo/docker-postfix/actions/workflows/build-push.yml/badge.svg)
+[![release](https://img.shields.io/github/v/release/panubo/docker-postfix)](https://github.com/panubo/docker-postfix/releases/latest)
+[![license](https://img.shields.io/github/license/panubo/docker-postfix)](LICENSE)
+
 Postfix SMTP Relay based on Debian Bullseye.
 
 Highly configurable Docker image for SMTP relaying. Use wherever a connected service
@@ -10,6 +14,20 @@ Not intended to be used for receiving email for local delivery or end-user
 email access.
 
 This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `public.ecr.aws/panubo/postfix`.
+
+## Table of Contents
+
+- [Environment Variables](#environment-variables)
+- [Postfix Prometheus Exporter](#postfix-prometheus-exporter)
+- [Logging](#logging)
+- [Custom Scripts](#custom-scripts)
+- [Usage Example](#usage-example)
+- [Volumes](#volumes)
+- [Ports](#ports)
+- [Test email](#test-email)
+- [Developing](#developing)
+- [Releases](#releases)
+- [Status](#status)
 
 ## Environment Variables
 
@@ -84,7 +102,7 @@ In some cases it might be necessary to further customise Postfix parameters that
 
 Example usage:
 
-```
+```shell
 POSTCONF=masquerade_domains=foo.example.com example.com;masquerade_exceptions=root,mailer-daemon
 ```
 
@@ -128,7 +146,7 @@ Simple example:
 
 Usage with SendGrid:
 
-```
+```shell
 docker run --rm -t -i \
   --name smtp \
   -v $(pwd)/spool:/var/spool/postfix:rw \
@@ -137,6 +155,21 @@ docker run --rm -t -i \
   -e RELAYHOST='[smtp.sendgrid.net]:587' \
   -e RELAYHOST_PASSWORDMAP="[smtp.sendgrid.net]:587:apikey:<apikey goes here>" \
   quay.io/panubo/postfix:latest
+```
+
+Usage with `docker-compose.yml`:
+
+```yaml
+services:
+  postfix:
+    image: quay.io/panubo/postfix:latest
+    environment:
+      MAILNAME: mail.example.com
+      RELAYHOST: '[smtp.sendgrid.net]:587'
+      RELAYHOST_AUTH: 'yes'
+      RELAYHOST_PASSWORDMAP: '[smtp.sendgrid.net]:587:apikey:YOUR_API_KEY'
+    ports:
+      - "2525:25"
 ```
 
 ## Volumes
@@ -152,7 +185,7 @@ Ports `25`, `587` and `2525` are enabled.
 
 To send a test email via the command line, make sure heirloom-mailx (aka bsd-mailx) is installed.
 
-```
+```shell
 echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test email\n\nThis is a test email message" | mailx -v -S smtp=smtp://... -S from=bill@example.com -t
 
 # With TLS
@@ -172,6 +205,11 @@ For production usage, please use a versioned release rather than the floating 'l
 
 See the [releases](https://github.com/panubo/docker-postfix/releases) for tag usage
 and release notes.
+
+Images are available on:
+
+- [quay.io/panubo/postfix](https://quay.io/repository/panubo/postfix?tab=tags)
+- [public.ecr.aws/panubo/postfix](https://gallery.ecr.aws/panubo/postfix)
 
 ## Status
 
