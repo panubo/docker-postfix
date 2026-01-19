@@ -33,7 +33,7 @@ This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `
 
 - `MAILNAME` - set this to a legitimate FQDN hostname for this service (required). (example, `mail.example.com`)
 - `MYNETWORKS` - comma separated list of IP subnets that are allowed to relay. Default `127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`
-- `LOGOUTPUT` - Log file location. eg `/var/log/maillog`. Default `/dev/stdout`. See [Logging](#logging)
+- `LOGOUTPUT` - Log file location. e.g. `/var/log/maillog`. Default `/dev/stdout`. See [Logging](#logging)
 - `TZ` - set timezone. This is used by Postfix to create `Received` headers. Default `UTC`.
 - `POSTFIX_EXPORTER_ENABLED` - enable the Prometheus postfix_exporter. Default `false`. See [Postfix Exporter](#postfix-prometheus-exporter)
 
@@ -41,7 +41,7 @@ This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `
 
 - `SIZELIMIT` - Postfix `message_size_limit`. Default `15728640`.
 - `POSTFIX_ADD_MISSING_HEADERS` - add missing headers. Default `no`. (options, `yes`, `no`)
-- `INET_PROTOCOLS` - IP protocols, eg `ipv4` or `ipv6`. Default `all`. (options, `ipv4`, `ipv6`, `all`)
+- `INET_PROTOCOLS` - IP protocols, e.g. `ipv4` or `ipv6`. Default `all`. (options, `ipv4`, `ipv6`, `all`)
 - `BOUNCE_ADDRESS` - Email address to receive delivery failure notifications. Default is to log the delivery failure.
 - `HEADER_CHECKS` - If `true` activates a set of pre-configured header_checks. (options, `true`, `false`)
 - `DISABLE_VRFY_COMMAND` - Prevents some email address harvesting techniques. Default `yes`. (options, `yes`, `no`)
@@ -51,7 +51,7 @@ This image is available on quay.io `quay.io/panubo/postfix` and AWS ECR Public `
 These are common parameters to rate limit outbound mail:
 
 - `SMTP_DESTINATION_CONCURRENCY_LIMIT` - Number of concurrent connections per receiving domain.
-- `SMTP_DESTINATION_RATE_DELAY` - Additional delay (eg `5s`) between messages to the same receiving domain.
+- `SMTP_DESTINATION_RATE_DELAY` - Additional delay (e.g. `5s`) between messages to the same receiving domain.
 - `SMTP_EXTRA_RECIPIENT_LIMIT` - Limit the number of recipients of each message sent to the receiving domain.
 
 **Relay host parameters:**
@@ -98,7 +98,7 @@ NB. A self-signed ("snake-oil") certificate will be generated on start if requir
 
 **Advanced Postfix parameters:**
 
-In some cases it might be necessary to further customise Postfix parameters that are not explicitly exposed via environment variables. In this case the environment variable `POSTCONF` provides a hook that is directly passed to `postconf -e` after splitting it by `;`. N.B. this is different from existing usage of other multi-value options that use a comma.
+In some cases it might be necessary to further customise Postfix parameters that are not explicitly exposed via environment variables. In this case the environment variable `POSTCONF` provides a hook that is directly passed to `postconf -e` after splitting it by `;`. N.B. This is different from the comma-separated format used for other multi-value options.
 
 Example usage:
 
@@ -110,13 +110,13 @@ Would result in `masquerade_domains` and `masquerade_exceptions` being configure
 
 **Config Reloader**
 
-The config reloader watches the known TLS cert and keys (`TLS_CRT`, `TLS_KEY` etc) for changes (`mv` or updated Kubernetes secret) then reloads Postfix.
+The config reloader watches the known TLS certificates and keys (`TLS_CRT`, `TLS_KEY`, etc.) for changes (e.g. `mv` or an updated Kubernetes secret) and then reloads Postfix.
 
 - `CONFIG_RELOADER_ENABLED` - Enable the config reloader. Default `false`, must be set to `true` to enable.
 
 ## Postfix Prometheus Exporter
 
-This image comes with [kumina/postfix_exporter](https://github.com/kumina/postfix_exporter) pre-installed. To enable set the environment variable `POSTFIX_EXPORTER_ENABLED=true` (this must be exactly "true"). The exporter requires that the logoutput is `/dev/stdout` it can't be anything else.
+This image comes with [kumina/postfix_exporter](https://github.com/kumina/postfix_exporter) pre-installed. To enable set the environment variable `POSTFIX_EXPORTER_ENABLED=true` (this must be exactly "true"). The exporter requires that the log output is set to `/dev/stdout`; it cannot be anything else.
 
 The exporter listens on port `9154/tcp`.
 
@@ -124,19 +124,19 @@ See [Logging](#logging)
 
 ## Logging
 
-This container outputs the Postfix mail log to stdout by default, additionally logs are saved to `/var/log/s6-maillog/current` which is rotated every 10MB with only 3 log files retained.
+This container outputs the Postfix mail log to stdout by default. Additionally, logs are saved to `/var/log/s6-maillog/current` which is rotated every 10MB with only 3 log files retained.
 
 If you want to output somewhere else you can set environment variable `LOGOUTPUT`. For example `LOGOUTPUT=/var/log/maillog`.
 
 When enabled OpenDKIM only supports syslog output, the syslogd daemon is only used for OpenDKIM. Only /dev/stdout is supported for OpenDKIM syslog logs.
 
-_Note: the Postfix Prometheus exporter only works when the logs are left at /dev/stdout. This requirement of logs going to /dev/stdout is due to the containers logging structure. This may be improved but was needed to keep with backwards compatibility without adding additional variables to configured_
+_Note: the Postfix Prometheus exporter only works when logs are sent to /dev/stdout. This requirement is due to the container's logging structure. This may be improved, but was needed to maintain backwards compatibility without adding additional configuration variables._
 
 _Note: The log `/var/log/s6-maillog/current` is always created but won't actually contain any logs if `LOGOUTPUT` is not `/dev/stdout`._
 
 ## Custom Scripts
 
-Executable shell scripts and binaries can be mounted or copied in to `/etc/entrypoint.d`. These will be run when the container is launched but before postfix is started. These can be used to customise the behaviour of the container.
+Executable shell scripts and binaries can be mounted or copied into `/etc/entrypoint.d`. These will be run when the container is launched but before postfix is started. These can be used to customise the behaviour of the container.
 
 ## Usage Example
 
@@ -191,7 +191,7 @@ echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test
 # With TLS
 echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test email\n\nThis is a test email message" | mailx -v -S smtp-use-starttls -S ssl-verify=ignore -S smtp=smtp://... -S from=bill@example.com -t
 
-# With TLS on Centos/Fedora (extra nss-config-dir)
+# With TLS on CentOS/Fedora (extra nss-config-dir)
 echo -e "To: Bob <bob@example.com>\nFrom: Bill <bill@example.com>\nSubject: Test email\n\nThis is a test email message" | mailx -v -S smtp-use-starttls -S ssl-verify=ignore -S nss-config-dir=/etc/pki/nssdb -S smtp=smtp://... -S from=bill@example.com -t
 ```
 
