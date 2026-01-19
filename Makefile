@@ -28,7 +28,7 @@ run-dkim: dkim.key ## Runs the docker image in a test mode with DKIM
 		-e RELAYHOST=172.17.0.2 \
 		-e MAILNAME=mail.example.com \
 		-e CONFIG_RELOADER_ENABLED=true \
-		-e USE_DKIM=yes -v `pwd`/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):$(TAG)))
+		-e USE_DKIM=yes -v $(shell pwd)/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):$(TAG)))
 	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
 	@echo "Running ${ID} @ smtp://${IP}"
 	@docker attach ${ID}
@@ -40,7 +40,7 @@ run-all-dkim: dkim.key ## Runs the docker image in a test mode. All settings
 		-e MAILNAME=mail.example.com \
 		-e DKIM_DOMAINS=foo.example.com,bar.example.com,example.net \
 		-e DKIM_SELECTOR=6091aa68-f43d-47cf-a52e-bafda525d0bc \
-		-e USE_DKIM=yes -v `pwd`/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):$(TAG)))
+		-e USE_DKIM=yes -v $(shell pwd)/dkim.key:/etc/opendkim/dkim.key $(IMAGE_NAME):$(TAG)))
 	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
 	@echo "Running ${ID} @ smtp://${IP}"
 	@docker attach ${ID}
