@@ -232,7 +232,7 @@ rm -f /var/spool/postfix/pid/*
 
 # check postfix is happy (also will fix some things)
 echo "postfix >> Checking Postfix Configuration"
-postfix check
+postfix check || { echo "postfix >> Error: check failed, dumping config"; cat /etc/postfix/main.cf; exit 1; }
 
 echo "postfix >> Starting postfix"
 exec /usr/sbin/postfix start-fg
