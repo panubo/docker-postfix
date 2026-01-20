@@ -93,9 +93,7 @@ jobs:
           password: ${{ secrets.PANUBUILD_QUAYIO_TOKEN }}
 
       - name: Setup BATS
-        uses: panubo/setup-bats-action@v2
-        with:
-          bats-version: 1.7.0
+        uses: bats-core/bats-action@3.0.1
 
       - name: Build and export to Docker
         uses: docker/build-push-action@v6
