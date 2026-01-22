@@ -23,6 +23,18 @@ run: ## Runs the docker image in a test mode
 	@docker attach ${ID}
 	@docker kill ${ID}
 
+run-users: ## Runs the docker image in a test mode with SMTPD_USERS
+	$(eval ID := $(shell docker rm -f $(NAME) >/dev/null 2>&1; docker run -d --name $(NAME) --hostname mail.example.com \
+		-e MAILNAME=mail.example.com \
+		-e SIZELIMIT=20480000 \
+		-e SMTPD_USERS='user1:pass1,user2:pass2' \
+		-e LOGOUTPUT=/var/log/maillog \
+		$(IMAGE_NAME):$(TAG)))
+	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ID}))
+	@echo "Running ${ID} @ smtp://${IP}"
+	@docker attach ${ID}
+	@docker kill ${ID}
+
 run-dkim: dkim.key ## Runs the docker image in a test mode with DKIM
 	$(eval ID := $(shell docker rm -f $(NAME) >/dev/null 2>&1; docker run -d --name $(NAME) --hostname mail.example.com \
 		-e RELAYHOST=172.17.0.2 \
@@ -53,11 +65,12 @@ push: ## Pushes the docker image to hub.docker.com
 	docker push $(IMAGE_NAME):$(TAG)
 
 clean: ## Remove built image
-	docker rmi $(IMAGE_NAME):$(TAG)
+	docker rmi $(IMAGE_NAME):$(TAG) || true
+	docker rmi $(IMAGE_NAME):$(TAG)-dev || true
 
-test: ## Build a test image and run bats tests in docker
-	docker build --target development -t $(IMAGE_NAME):test-dev .
-	docker run --rm -v $(shell pwd):/app -w /app $(IMAGE_NAME):test-dev bats test/
+test: clean ## Build a test image and run bats tests in docker
+	docker build --target development -t $(IMAGE_NAME):$(TAG)-dev .
+	docker run --rm -v $(shell pwd):/src -w /src $(IMAGE_NAME):$(TAG)-dev bats test/
 
 _ci_test: test
 	true

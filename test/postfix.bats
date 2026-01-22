@@ -89,3 +89,37 @@ teardown() {
     [ "$status" -eq 0 ]
     [ "$output" = "inet:localhost:8891" ]
 }
+
+@test "SMTPD_USERS sets up smtpd.conf and enables SASL" {
+    # Execute the setup script with the necessary environment variables
+    (
+        # Set env vars to test against
+        export MAILNAME="test.example.com"
+        export MYNETWORKS="10.0.0.0/8 127.0.0.0/8"
+        export SMTPD_USERS='user1:pass1,user2:pass2'
+        export USE_TLS="no" # Disable TLS to avoid slow cert generation
+
+        # Execute the setup script
+        bash -x "${BATS_TMPDIR}/run"
+    )
+
+    run postconf -h smtpd_sasl_auth_enable
+    [ "$status" -eq 0 ]
+    [ "$output" = "yes" ]
+
+    run postconf -h broken_sasl_auth_clients
+    [ "$status" -eq 0 ]
+    [ "$output" = "yes" ]
+
+    run postconf -h smtpd_sasl_local_domain
+    [ "$status" -eq 0 ]
+    [ "$output" = '$myhostname' ]
+
+    # Check /etc/postfix/sasl/smtpd.conf
+    run cat /etc/postfix/sasl/smtpd.conf
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ "pwcheck_method: auxprop" ]]
+    [[ "$output" =~ "auxprop_plugin: sasldb" ]]
+    [[ "$output" =~ "mech_list: PLAIN LOGIN CRAM-MD5 DIGEST-MD5 NTLM" ]]
+
+}

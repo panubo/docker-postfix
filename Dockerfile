@@ -66,7 +66,7 @@ FROM base AS development
 RUN set -x \
 && export DEBIAN_FRONTEND=noninteractive \
 && apt-get update \
-&& apt-get install -y --no-install-recommends bats \
+&& apt-get install -y --no-install-recommends bats swaks \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
 ;
