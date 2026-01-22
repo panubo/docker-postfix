@@ -4,7 +4,7 @@
 [![release](https://img.shields.io/github/v/release/panubo/docker-postfix)](https://github.com/panubo/docker-postfix/releases/latest)
 [![license](https://img.shields.io/github/license/panubo/docker-postfix)](LICENSE)
 
-Postfix SMTP Relay based on Debian Bullseye.
+Postfix SMTP Relay based on Debian.
 
 Highly configurable Docker image for SMTP relaying. Use wherever a connected service
 requires SMTP sending capabilities. Supports TLS out of the box and DKIM
